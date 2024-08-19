@@ -12,7 +12,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public class ModItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(simplywands.MOD_ID);
 
-    //  Registered Items
+    //  Registered Wand Items
     public static final DeferredItem<Item> SPONGE_WAND =
             ITEMS.registerItem("sponge_wand", SpongeWand::new, new Item.Properties().durability(256));
 
@@ -33,6 +33,9 @@ public class ModItems {
 
     public static final DeferredItem<Item> ACCELERATION_WAND =
             ITEMS.registerItem("acceleration_wand", AccelerationWand::new, new Item.Properties().durability(32));
+
+    public static final DeferredItem<Item> LOVE_WAND =
+            ITEMS.registerItem("love_wand", LoveWand::new, new Item.Properties().durability(384));
 
 
     public static void register(IEventBus eventBus) {

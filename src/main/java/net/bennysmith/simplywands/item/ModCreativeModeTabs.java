@@ -28,6 +28,7 @@ public class ModCreativeModeTabs {
                 output.accept(ModItems.TELEPORT_WAND.get());
                 output.accept(ModItems.LIGHT_WAND.get());
                 output.accept(ModItems.ACCELERATION_WAND.get());
+                output.accept(ModItems.LOVE_WAND.get());
 
             }).build());
 

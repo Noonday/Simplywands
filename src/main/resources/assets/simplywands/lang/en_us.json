@@ -6,6 +6,7 @@
   "item.simplywands.teleport_wand": "Teleportation Wand",
   "item.simplywands.light_wand": "Illumination Wand",
   "item.simplywands.acceleration_wand": "Acceleration Wand",
+  "item.simplywands.love_wand": "Love Wand",
 
 
   "tooltip.simplywands.sponge_wand.tooltip": "§8Removes water in a radius.§r",
@@ -16,6 +17,7 @@
   "tooltip.simplywands.light_wand.tooltip": "§8Places a light source block.§r",
   "tooltip.simplywands.acceleration_wand1.tooltip": "§8Accelerates the tick of a block instantly.§r",
   "tooltip.simplywands.acceleration_wand2.tooltip": "§8§oCurrently only works on vanilla machines.§r",
+  "tooltip.simplywands.love_wand.tooltip": "§8Allows for breeding of any breedable creature§r",
 
 
   "itemGroup.simplywands.simplywands_tab": "SimplyWands"
