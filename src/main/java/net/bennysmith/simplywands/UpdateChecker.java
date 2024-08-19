@@ -28,6 +28,11 @@ public class UpdateChecker {
     @SuppressWarnings("unused")
     @SubscribeEvent
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+        // Check if it's enabled or disabled
+        if (!Config.enableUpdateChecker) {
+            return;
+        }
+
         Player player = event.getEntity();
         if (!player.level().isClientSide()) {
             return;
