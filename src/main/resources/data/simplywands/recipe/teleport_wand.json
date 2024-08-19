@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "  B",
+    " A ",
+    "A  "
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:blaze_rod"
+    },
+    "B": {
+      "item": "minecraft:ender_pearl"
+    }
+  },
+  "result": {
+    "id": "simplywands:teleport_wand",
+    "count": 1
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "item.simplywands.sponge_wand": "Sponge Wand",
+  "item.simplywands.lavasponge_wand": "Lava Sponge Wand",
+  "item.simplywands.growth_wand": "Growth Wand",
+  "item.simplywands.magnetic_wand": "Magnetic Wand",
+  "item.simplywands.teleport_wand": "Teleportation Wand",
+  "item.simplywands.light_wand": "Illumination Wand",
+  "item.simplywands.acceleration_wand": "Acceleration Wand",
+
+
+  "tooltip.simplywands.sponge_wand.tooltip": "§8Removes water in a radius.§r",
+  "tooltip.simplywands.lavasponge_wand.tooltip": "§8Removes lava in a radius.§r",
+  "tooltip.simplywands.growth_wand.tooltip": "§8Grows crops in a radius.§r",
+  "tooltip.simplywands.magnetic_wand.tooltip": "§8Attracts items.§r",
+  "tooltip.simplywands.teleport_wand.tooltip": "§8Teleports the user forward.§r",
+  "tooltip.simplywands.light_wand.tooltip": "§8Places a light source block.§r",
+  "tooltip.simplywands.acceleration_wand1.tooltip": "§8Accelerates the tick of a block instantly.§r",
+  "tooltip.simplywands.acceleration_wand2.tooltip": "§8§oCurrently only works on vanilla machines.§r",
+
+
+  "itemGroup.simplywands.simplywands_tab": "SimplyWands"
+}

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " BC",
+    " AB",
+    "A  "
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:stick"
+    },
+    "B": {
+      "item": "minecraft:fire_charge"
+    },
+    "C": {
+      "item": "minecraft:glowstone"
+    }
+  },
+  "result": {
+    "id": "simplywands:light_wand",
+    "count": 1
+  }
+}
