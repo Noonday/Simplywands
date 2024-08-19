@@ -21,7 +21,7 @@ import java.util.Properties;
 @EventBusSubscriber(modid = "simplywands", bus = EventBusSubscriber.Bus.GAME)
 public class UpdateChecker {
     private static final String CURSEFORGE_API_URL = "https://api.curseforge.com/v1/mods/simplywands/files";
-    private static final String CURRENT_VERSION = "1.0.5";
+    private static final String CURRENT_VERSION = "1.1";
     private static final String API_KEY = loadApiKey();
     private static final Logger LOGGER = LogUtils.getLogger();
 
