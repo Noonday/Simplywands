@@ -17,7 +17,7 @@
   "tooltip.simplywands.light_wand.tooltip": "§8Places a light source block.§r",
   "tooltip.simplywands.acceleration_wand1.tooltip": "§8Accelerates the tick of a block instantly.§r",
   "tooltip.simplywands.acceleration_wand2.tooltip": "§8§oCurrently only works on vanilla machines.§r",
-  "tooltip.simplywands.love_wand.tooltip": "§8Allows for breeding of any breedable creature§r",
+  "tooltip.simplywands.love_wand.tooltip": "§8Harness the power of love to breed any willing creature.§r",
 
 
   "itemGroup.simplywands.simplywands_tab": "SimplyWands"
