@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import net.bennysmith.simplywands.Config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderStateShard;
@@ -41,8 +42,8 @@ import java.util.function.BiConsumer;
 public class OreLocatorWand extends Item {
 
     // Constants for highlight radius and duration
-    private static final int HIGHLIGHT_RADIUS = 32;
-    private static final long HIGHLIGHT_DURATION_MS = 5000; // 30 seconds (30000)
+    // private static final int HIGHLIGHT_RADIUS = 32;
+    // private static final long HIGHLIGHT_DURATION_MS = 5000; // 30 seconds (30000)
 
     // Map to store highlighted blocks and their expiration times
     private static final Map<BlockPos, Long> highlightedBlocks = new HashMap<>();
@@ -97,12 +98,12 @@ public class OreLocatorWand extends Item {
     }
 
     private void highlightNearbyOres(Level level, BlockPos center, Block targetBlock, Player player) {
-        long expirationTime = System.currentTimeMillis() + HIGHLIGHT_DURATION_MS;
+        long expirationTime = System.currentTimeMillis() + Config.highlightDurationMs;
         lastHighlightTime = System.currentTimeMillis();
         // Iterate through blocks in a cube around the center position
         for (BlockPos pos : BlockPos.betweenClosed(
-                center.offset(-HIGHLIGHT_RADIUS, -HIGHLIGHT_RADIUS, -HIGHLIGHT_RADIUS),
-                center.offset(HIGHLIGHT_RADIUS, HIGHLIGHT_RADIUS, HIGHLIGHT_RADIUS))) {
+                center.offset(-Config.highlightRadius, -Config.highlightRadius, -Config.highlightRadius),
+                center.offset(Config.highlightRadius, Config.highlightRadius, Config.highlightRadius))) {
             // If the block is the same as the target ore, add it to highlighted blocks
             if (level.getBlockState(pos).is(targetBlock)) {
                 highlightedBlocks.put(pos.immutable(), expirationTime);
@@ -133,7 +134,8 @@ public class OreLocatorWand extends Item {
         }
 
         // Only re-enable depth test if the highlight duration is over
-        if (currentTime > lastHighlightTime + HIGHLIGHT_DURATION_MS) {
+        // Use Config.highlightDurationMs
+        if (currentTime > lastHighlightTime + Config.highlightDurationMs) {
             RenderSystem.enableDepthTest();
         }
     }
