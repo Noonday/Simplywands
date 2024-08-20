@@ -35,7 +35,7 @@ public class ModItems {
             ITEMS.registerItem("acceleration_wand", AccelerationWand::new, new Item.Properties().durability(32));
 
     public static final DeferredItem<Item> LOVE_WAND =
-            ITEMS.registerItem("love_wand", LoveWand::new, new Item.Properties().durability(384));
+            ITEMS.registerItem("love_wand", LoveWand::new, new Item.Properties().durability(300));
 
 
     public static void register(IEventBus eventBus) {
