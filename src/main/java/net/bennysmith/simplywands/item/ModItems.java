@@ -37,6 +37,9 @@ public class ModItems {
     public static final DeferredItem<Item> LOVE_WAND =
             ITEMS.registerItem("love_wand", LoveWand::new, new Item.Properties().durability(300));
 
+    public static final DeferredItem<Item> ORELOCATOR_WAND =
+            ITEMS.registerItem("orelocator_wand", OreLocatorWand::new, new Item.Properties().durability(1000));
+
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);

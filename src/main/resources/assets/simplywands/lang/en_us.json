@@ -7,6 +7,7 @@
   "item.simplywands.light_wand": "Illumination Wand",
   "item.simplywands.acceleration_wand": "Acceleration Wand",
   "item.simplywands.love_wand": "Love Wand",
+  "item.simplywands.orelocator_wand": "Ore-Locator Wand",
 
 
   "tooltip.simplywands.sponge_wand.tooltip": "§8Removes water in a radius.§r",
@@ -18,6 +19,7 @@
   "tooltip.simplywands.acceleration_wand1.tooltip": "§8Accelerates the tick of a block instantly.§r",
   "tooltip.simplywands.acceleration_wand2.tooltip": "§8§oCurrently only works on vanilla machines.§r",
   "tooltip.simplywands.love_wand.tooltip": "§8Harness the power of love to breed any willing creature.§r",
+  "tooltip.simplywands.orelocator_wand.tooltip": "§8Locate ores.§r",
 
 
   "itemGroup.simplywands.simplywands_tab": "SimplyWands"

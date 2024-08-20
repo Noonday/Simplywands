@@ -29,6 +29,7 @@ public class ModCreativeModeTabs {
                 output.accept(ModItems.LIGHT_WAND.get());
                 output.accept(ModItems.ACCELERATION_WAND.get());
                 output.accept(ModItems.LOVE_WAND.get());
+                output.accept(ModItems.ORELOCATOR_WAND.get());
 
             }).build());
 
