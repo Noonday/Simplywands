@@ -40,6 +40,9 @@ public class ModItems {
     public static final DeferredItem<Item> ORELOCATOR_WAND =
             ITEMS.registerItem("orelocator_wand", OreLocatorWand::new, new Item.Properties().durability(100));
 
+    public static final DeferredItem<Item> CATALYST =
+            ITEMS.registerItem("catalyst", Catalyst::new, new Item.Properties().stacksTo(1));
+
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);
