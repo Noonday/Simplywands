@@ -1,5 +1,6 @@
 package net.bennysmith.simplywands.item.custom;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -44,8 +45,10 @@ public class MagneticWand extends Item {
             // Play a sound based on whether the wand is activated or deactivated
             if (isActive) {
                 level.playSound(null, blockPos, SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.BLOCKS, 0.8F, 1.0F); // Normal pitch when activated
+                player.displayClientMessage(Component.literal("Magnet on").withStyle(ChatFormatting.GOLD), true); // Display "Magnet on" in golden color
             } else {
                 level.playSound(null, blockPos, SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.BLOCKS, 0.8F, 0.5F); // Lower pitch when deactivated
+                player.displayClientMessage(Component.literal("Magnet off").withStyle(ChatFormatting.GOLD), true); // Display "Magnet off" in golden color
             }
         }
         return InteractionResultHolder.success(player.getItemInHand(hand));
