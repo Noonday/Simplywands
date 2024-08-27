@@ -23,7 +23,6 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
-import net.neoforged.fml.ModList;
 
 import java.util.HashMap;
 import java.util.List;
