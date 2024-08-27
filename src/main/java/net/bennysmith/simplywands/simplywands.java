@@ -24,8 +24,6 @@ public class simplywands {
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::addCreative);
 
-        NeoForge.EVENT_BUS.register(UpdateChecker.class);
-
         NeoForge.EVENT_BUS.register(OreLocatorWand.class);
         ModCreativeModeTabs.register(modEventBus);
         ModItems.register(modEventBus);
