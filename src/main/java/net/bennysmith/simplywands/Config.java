@@ -17,8 +17,9 @@ public class Config {
     // Config for Ore Locator Wand
     private static final ModConfigSpec.IntValue HIGHLIGHT_RADIUS = BUILDER
             .comment("The radius (in blocks) in which ores will be highlighted")
-            .comment("Default: 32")
-            .defineInRange("highlightRadius", 32, 1, 64);
+            .comment("Can easily crash if high!")
+            .comment("Default: 8")
+            .defineInRange("highlightRadius", 8, 1, 64);
 
     private static final ModConfigSpec.LongValue HIGHLIGHT_DURATION_MS = BUILDER
             .comment("The duration (in milliseconds) for which ores will be highlighted")
