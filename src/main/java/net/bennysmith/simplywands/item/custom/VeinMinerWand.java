@@ -45,7 +45,7 @@ public class VeinMinerWand extends Item {
                 world.destroyBlock(blockPos, true);
             }
             ItemStack itemStack = player.getItemInHand(hand);
-            itemStack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand));
+            itemStack.hurtAndBreak(vein.size(), player, LivingEntity.getSlotForHand(hand));
             return InteractionResult.SUCCESS;
         }
 
