@@ -23,6 +23,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.neoforged.fml.ModList;
 
 import java.util.HashMap;
 import java.util.List;
@@ -46,10 +47,27 @@ public class AccelerationWand extends Item {
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
     }
 
-    // Method to check if a block should be accelerated
-    private boolean shouldAccelerateBlock(BlockState blockState) {
-        return blockState.is(ModTags.Blocks.ACCELERATABLE_BLOCKS);
+    private boolean shouldAccelerateBlock(BlockState blockState, ServerLevel level, BlockPos pos) {
+        // First, check if the block is in the blacklist
+        if (blockState.is(ModTags.Blocks.NON_ACCELERATABLE_BLOCKS)) {
+            return false;
+        }
+
+        // Then check if it's in the whitelist
+        if (blockState.is(ModTags.Blocks.ACCELERATABLE_BLOCKS)) {
+            return true;
+        }
+
+        // Check for ticker or random ticks
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (blockEntity != null) {
+            BlockEntityTicker<BlockEntity> ticker = (BlockEntityTicker<BlockEntity>) blockState.getTicker(level, blockEntity.getType());
+            return ticker != null;
+        }
+
+        return blockState.isRandomlyTicking();
     }
+
 
     // Method called when the wand is used on a block
     @Override
@@ -61,12 +79,11 @@ public class AccelerationWand extends Item {
         BlockState blockState = level.getBlockState(pos);
 
         if (!level.isClientSide() && player != null && level instanceof ServerLevel serverLevel) {
-            if (shouldAccelerateBlock(blockState)) {
+            if (shouldAccelerateBlock(blockState, serverLevel, pos)) {
                 // Accelerate the block, damage the wand, add cooldown, and spawn effects
                 accelerateBlock(serverLevel, pos);
                 ItemStack itemStack = player.getItemInHand(hand);
-                itemStack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(
-                        hand));
+                itemStack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand));
                 player.getCooldowns().addCooldown(this, 30);
                 spawnParticlesAndPlaySound(serverLevel, pos);
                 return InteractionResult.SUCCESS;
@@ -74,6 +91,7 @@ public class AccelerationWand extends Item {
         }
         return InteractionResult.PASS;
     }
+
 
     // Method called when the wand is used in the air
     @Override
@@ -101,7 +119,7 @@ public class AccelerationWand extends Item {
         int remainingTime = acceleratedBlocks.getOrDefault(blockPos, 0);
         if (remainingTime > 0) {
             BlockState blockState = level.getBlockState(blockPos);
-            if (shouldAccelerateBlock(blockState)) {
+            if (shouldAccelerateBlock(blockState, level, blockPos)) {
                 BlockEntity blockEntity = level.getBlockEntity(blockPos);
                 if (blockEntity != null) {
                     BlockEntityTicker<BlockEntity> ticker = (BlockEntityTicker<BlockEntity>) blockState.getTicker(level, blockEntity.getType());

@@ -1,14 +1,6 @@
 {
   "replace": false,
   "values": [
-    "minecraft:furnace",
-    "minecraft:blast_furnace",
-    "minecraft:smoker",
-    "minecraft:hopper",
-    "minecraft:spawner",
-    "minecraft:brewing_stand",
-    "minecraft:farmland",
-    "#minecraft:crops",
-    "minecraft:chest"
+
   ]
 }
