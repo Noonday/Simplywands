@@ -43,7 +43,6 @@ public class AccelerationWand extends Item {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         tooltipComponents.add(Component.translatable("tooltip.simplywands.acceleration_wand1.tooltip"));
-        tooltipComponents.add(Component.translatable("tooltip.simplywands.acceleration_wand2.tooltip"));
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
     }
 
