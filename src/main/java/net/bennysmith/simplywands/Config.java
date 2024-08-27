@@ -9,11 +9,6 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 public class Config {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
-    // Config for UpdateChecker
-    private static final ModConfigSpec.BooleanValue ENABLE_UPDATE_CHECKER = BUILDER
-            .comment("Whether to enable the update checker")
-            .define("enableUpdateChecker", true);
-
     // Config for Ore Locator Wand
     private static final ModConfigSpec.IntValue HIGHLIGHT_RADIUS = BUILDER
             .comment("The radius (in blocks) in which ores will be highlighted")
@@ -35,8 +30,6 @@ public class Config {
 
     @SubscribeEvent
     static void onLoad(final ModConfigEvent event) {
-        // Load config for UpdateChecker
-        enableUpdateChecker = ENABLE_UPDATE_CHECKER.get();
 
         // Load config for Ore Locator Wand
         highlightRadius = HIGHLIGHT_RADIUS.get();
