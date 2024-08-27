@@ -1,7 +1,7 @@
 {
   "parent": "minecraft:item/handheld",
   "textures": {
-    "layer0": "simplywands:item/vein_miner_wand"
+    "layer0": "simplywands:item/vein_miner_wand_anim"
   },
   "display": {
     "thirdperson_righthand": {
