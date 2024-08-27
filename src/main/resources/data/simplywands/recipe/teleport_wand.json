@@ -2,16 +2,16 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "  B",
-    " A ",
-    "A  "
+    "  E",
+    " B ",
+    "B  "
   ],
   "key": {
-    "A": {
+    "B": {
       "item": "minecraft:blaze_rod"
     },
-    "B": {
-      "item": "minecraft:ender_pearl"
+    "E": {
+      "item": "minecraft:ender_eye"
     }
   },
   "result": {

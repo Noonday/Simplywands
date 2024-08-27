@@ -2,22 +2,19 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    " BC",
-    " AD",
-    "A  "
+    "  S",
+    " N ",
+    "G  "
   ],
   "key": {
-    "A": {
-      "item": "minecraft:netherite_scrap"
+    "N": {
+      "item": "minecraft:netherite_ingot"
     },
-    "B": {
-      "item": "minecraft:clock"
+    "G": {
+      "item": "minecraft:gold_ingot"
     },
-    "C": {
+    "S": {
       "item": "minecraft:nether_star"
-    },
-    "D": {
-      "item": "minecraft:redstone"
     }
   },
   "result": {

@@ -2,16 +2,19 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    " BB",
-    " AB",
-    "A  "
+    "  L",
+    " S ",
+    "B  "
   ],
   "key": {
-    "A": {
+    "S": {
       "item": "minecraft:stick"
     },
     "B": {
       "item": "minecraft:bone_meal"
+    },
+    "L": {
+      "tag": "minecraft:leaves"
     }
   },
   "result": {

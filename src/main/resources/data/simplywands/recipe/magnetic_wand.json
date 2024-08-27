@@ -2,18 +2,18 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    " B ",
-    " AC",
-    "A  "
+    "  L",
+    " I ",
+    "R  "
   ],
   "key": {
-    "A": {
-      "item": "minecraft:stick"
+    "I": {
+      "item": "minecraft:iron_ingot"
     },
-    "B": {
+    "R": {
       "item": "minecraft:redstone"
     },
-    "C": {
+    "L": {
       "item": "minecraft:lapis_lazuli"
     }
   },

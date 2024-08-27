@@ -2,16 +2,19 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "  @",
-    " # ",
-    "#  "
+    "  H",
+    " S ",
+    "D  "
   ],
   "key": {
-    "#": {
+    "S": {
       "item": "minecraft:stick"
     },
-    "@": {
+    "H": {
       "item": "minecraft:hay_block"
+    },
+    "D": {
+      "item": "minecraft:white_dye"
     }
   },
   "result": {

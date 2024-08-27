@@ -2,16 +2,19 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "  B",
-    " A ",
-    "A  "
+    " BW",
+    " IB",
+    "I  "
   ],
   "key": {
-    "A": {
-      "item": "minecraft:netherite_scrap"
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "W": {
+      "item": "minecraft:wet_sponge"
     },
     "B": {
-      "item": "minecraft:wet_sponge"
+      "item": "minecraft:blaze_rod"
     }
   },
   "result": {

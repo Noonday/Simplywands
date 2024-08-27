@@ -2,8 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "  S",
-    " # ",
+    " SG",
+    " #S",
     "#  "
   ],
   "key": {
@@ -12,6 +12,9 @@
     },
     "S": {
       "item": "minecraft:sponge"
+    },
+    "G": {
+      "item": "minecraft:glass"
     }
   },
   "result": {
