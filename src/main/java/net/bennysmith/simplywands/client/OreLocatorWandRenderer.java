@@ -23,6 +23,7 @@ import java.awt.Color;
 import java.util.Map;
 import java.util.OptionalDouble;
 import java.util.function.BiConsumer;
+import java.util.concurrent.ConcurrentHashMap;
 
 @OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(modid = "simplywands", bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
@@ -51,31 +52,37 @@ public class OreLocatorWandRenderer {
     public static void onRenderLevelStage(RenderLevelStageEvent event) {
         if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) return;
 
-        PoseStack poseStack = event.getPoseStack();
-        long currentTime = System.currentTimeMillis();
+        ConcurrentHashMap<BlockPos, OreLocatorWand.BlockHighlight> highlightedBlocks = OreLocatorWand.getHighlightedBlocks();
+        if (highlightedBlocks.isEmpty()) return;
 
-        Map<BlockPos, OreLocatorWand.BlockHighlight> highlightedBlocks = OreLocatorWand.getHighlightedBlocks();
+        long currentTime = System.currentTimeMillis();
         
-        // Remove expired and broken blocks
         highlightedBlocks.entrySet().removeIf(entry -> {
             BlockPos pos = entry.getKey();
-            return currentTime > entry.getValue().expirationTime || 
+            return currentTime > entry.getValue().expirationTime ||
                    Minecraft.getInstance().level.getBlockState(pos).isAir();
         });
 
         if (!highlightedBlocks.isEmpty()) {
-            RenderSystem.setShader(GameRenderer::getPositionColorShader);
-            RenderSystem.disableDepthTest();
-            VertexConsumer builder = Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(OVERLAY_LINES);
-
-            Vec3 cameraPos = event.getCamera().getPosition();
-            for (Map.Entry<BlockPos, OreLocatorWand.BlockHighlight> entry : highlightedBlocks.entrySet()) {
-                renderOutline(poseStack, entry.getKey(), entry.getValue().block, cameraPos, builder, highlightedBlocks);
-            }
-
-            Minecraft.getInstance().renderBuffers().bufferSource().endBatch(OVERLAY_LINES);
-            RenderSystem.enableDepthTest();
+            renderHighlightedBlocks(event, highlightedBlocks, currentTime);
         }
+
+        // No need to update the original map as it's the same instance
+    }
+
+    private static void renderHighlightedBlocks(RenderLevelStageEvent event, Map<BlockPos, OreLocatorWand.BlockHighlight> highlightedBlocks, long currentTime) {
+        PoseStack poseStack = event.getPoseStack();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.disableDepthTest();
+        VertexConsumer builder = Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(OVERLAY_LINES);
+
+        Vec3 cameraPos = event.getCamera().getPosition();
+        for (Map.Entry<BlockPos, OreLocatorWand.BlockHighlight> entry : highlightedBlocks.entrySet()) {
+            renderOutline(poseStack, entry.getKey(), entry.getValue().block, cameraPos, builder, highlightedBlocks);
+        }
+
+        Minecraft.getInstance().renderBuffers().bufferSource().endBatch(OVERLAY_LINES);
+        RenderSystem.enableDepthTest();
     }
 
     private static void renderOutline(PoseStack poseStack, BlockPos pos, Block block, Vec3 cameraPos, VertexConsumer builder, Map<BlockPos, OreLocatorWand.BlockHighlight> highlightedBlocks) {

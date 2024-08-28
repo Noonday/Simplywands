@@ -20,10 +20,11 @@ import net.neoforged.neoforge.common.Tags;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class OreLocatorWand extends Item {
 
-    private static final Map<BlockPos, BlockHighlight> highlightedBlocks = new HashMap<>();
+    private static final ConcurrentHashMap<BlockPos, BlockHighlight> highlightedBlocks = new ConcurrentHashMap<>();
     private static long lastHighlightTime = 0;
 
     public static class BlockHighlight {
@@ -65,12 +66,17 @@ public class OreLocatorWand extends Item {
     private void highlightNearbyOres(Level level, BlockPos center, Block targetBlock, Player player) {
         long expirationTime = System.currentTimeMillis() + Config.highlightDurationMs;
         lastHighlightTime = System.currentTimeMillis();
-        for (BlockPos pos : BlockPos.betweenClosed(
-                center.offset(-Config.highlightRadius, -Config.highlightRadius, -Config.highlightRadius),
-                center.offset(Config.highlightRadius, Config.highlightRadius, Config.highlightRadius))) {
-            BlockState state = level.getBlockState(pos);
-            if (state.is(targetBlock)) {
-                highlightedBlocks.put(pos.immutable(), new BlockHighlight(state.getBlock(), expirationTime));
+        
+        BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
+        for (int x = -Config.highlightRadius; x <= Config.highlightRadius; x++) {
+            for (int y = -Config.highlightRadius; y <= Config.highlightRadius; y++) {
+                for (int z = -Config.highlightRadius; z <= Config.highlightRadius; z++) {
+                    mutablePos.set(center.getX() + x, center.getY() + y, center.getZ() + z);
+                    BlockState state = level.getBlockState(mutablePos);
+                    if (state.is(targetBlock)) {
+                        highlightedBlocks.put(mutablePos.immutable(), new BlockHighlight(state.getBlock(), expirationTime));
+                    }
+                }
             }
         }
     }
@@ -81,11 +87,19 @@ public class OreLocatorWand extends Item {
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
     }
 
-    public static Map<BlockPos, BlockHighlight> getHighlightedBlocks() {
+    public static ConcurrentHashMap<BlockPos, BlockHighlight> getHighlightedBlocks() {
         return highlightedBlocks;
     }
 
     public static long getLastHighlightTime() {
         return lastHighlightTime;
+    }
+
+    public static void addHighlightedBlock(BlockPos pos, Block block, long expirationTime) {
+        highlightedBlocks.put(pos, new BlockHighlight(block, expirationTime));
+    }
+
+    public static void removeHighlightedBlock(BlockPos pos) {
+        highlightedBlocks.remove(pos);
     }
 }
