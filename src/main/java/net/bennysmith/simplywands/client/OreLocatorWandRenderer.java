@@ -2,7 +2,6 @@ package net.bennysmith.simplywands.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import net.bennysmith.simplywands.Config;
 import net.bennysmith.simplywands.item.custom.OreLocatorWand;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
