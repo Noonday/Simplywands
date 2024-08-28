@@ -23,8 +23,18 @@ import java.util.Map;
 
 public class OreLocatorWand extends Item {
 
-    private static final Map<BlockPos, Long> highlightedBlocks = new HashMap<>();
+    private static final Map<BlockPos, BlockHighlight> highlightedBlocks = new HashMap<>();
     private static long lastHighlightTime = 0;
+
+    public static class BlockHighlight {
+        public final Block block;
+        public final long expirationTime;
+
+        public BlockHighlight(Block block, long expirationTime) {
+            this.block = block;
+            this.expirationTime = expirationTime;
+        }
+    }
 
     public OreLocatorWand(Properties properties) {
         super(properties);
@@ -58,8 +68,9 @@ public class OreLocatorWand extends Item {
         for (BlockPos pos : BlockPos.betweenClosed(
                 center.offset(-Config.highlightRadius, -Config.highlightRadius, -Config.highlightRadius),
                 center.offset(Config.highlightRadius, Config.highlightRadius, Config.highlightRadius))) {
-            if (level.getBlockState(pos).is(targetBlock)) {
-                highlightedBlocks.put(pos.immutable(), expirationTime);
+            BlockState state = level.getBlockState(pos);
+            if (state.is(targetBlock)) {
+                highlightedBlocks.put(pos.immutable(), new BlockHighlight(state.getBlock(), expirationTime));
             }
         }
     }
@@ -70,7 +81,7 @@ public class OreLocatorWand extends Item {
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
     }
 
-    public static Map<BlockPos, Long> getHighlightedBlocks() {
+    public static Map<BlockPos, BlockHighlight> getHighlightedBlocks() {
         return highlightedBlocks;
     }
 
