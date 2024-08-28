@@ -31,6 +31,7 @@ public class ModCreativeModeTabs {
                 output.accept(ModItems.LOVE_WAND.get());
                 output.accept(ModItems.ORELOCATOR_WAND.get());
                 output.accept(ModItems.VEIN_MINER_WAND.get());
+                output.accept(ModItems.FOOD_WAND.get());
 
             }).build());
 

@@ -43,6 +43,9 @@ public class ModItems {
     public static final DeferredItem<Item> VEIN_MINER_WAND =
             ITEMS.registerItem("vein_miner_wand", VeinMinerWand::new, new Item.Properties().durability(1562));
 
+    public static final DeferredItem<Item> FOOD_WAND =
+            ITEMS.registerItem("food_wand", FoodWand::new, new Item.Properties().stacksTo(1));
+
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);

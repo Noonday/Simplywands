@@ -9,6 +9,7 @@
   "item.simplywands.love_wand": "Love Wand",
   "item.simplywands.orelocator_wand": "Ore-Locator Wand",
   "item.simplywands.vein_miner_wand": "Vein-Miner Wand",
+  "item.simplywands.food_wand": "Food Wand",
 
 
 
@@ -22,6 +23,7 @@
   "tooltip.simplywands.love_wand.tooltip": "§8Harness the power of love to breed any willing creature.§r",
   "tooltip.simplywands.orelocator_wand.tooltip": "§8Locate ores.§r",
   "tooltip.simplywands.vein_miner_wand.tooltip": "§8Mines entire veins of ores.§r",
+  "tooltip.simplywands.food_wand.tooltip": "§8Automatically eats for you.§r",
 
 
 
