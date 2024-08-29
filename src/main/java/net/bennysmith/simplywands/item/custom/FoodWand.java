@@ -1,31 +1,30 @@
 package net.bennysmith.simplywands.item.custom;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.Level;
 import net.minecraft.network.chat.Component;
-import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.TooltipFlag;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.bus.api.SubscribeEvent;
 
 import java.util.List;
 
 public class FoodWand extends Item {
-    private int tickCounter = 0;
     private boolean isActive = false;
 
     public FoodWand(Properties properties) {
         super(properties);
+        NeoForge.EVENT_BUS.register(this);
     }
 
     @Override
@@ -37,65 +36,34 @@ public class FoodWand extends Item {
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         if (!level.isClientSide()) {
             isActive = !isActive;
-            BlockPos blockPos = player.blockPosition();
-
             if (isActive) {
-                level.playSound(null, blockPos, SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.BLOCKS, 0.8F, 1.0F);
+                level.playSound(null, player.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.8F, 1.0F);
                 player.displayClientMessage(Component.literal("Food Wand activated").withStyle(ChatFormatting.GREEN), true);
             } else {
-                level.playSound(null, blockPos, SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.BLOCKS, 0.8F, 0.5F);
+                level.playSound(null, player.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.8F, 0.5F);
                 player.displayClientMessage(Component.literal("Food Wand deactivated").withStyle(ChatFormatting.RED), true);
             }
         }
         return InteractionResultHolder.success(player.getItemInHand(hand));
     }
 
-    @Override
-    public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
-        if (isActive && entity instanceof Player player) {
-            tickCounter++;
-
-            if (tickCounter >= 20) {
-                tickCounter = 0;
-
-                int currentFoodLevel = player.getFoodData().getFoodLevel();
-
-                if (currentFoodLevel < 20) {
-                    ItemStack foodStack = findFoodInInventory(player);
-                    if (!foodStack.isEmpty() && foodStack.has(DataComponents.FOOD)) {
-                        float currentSaturation = player.getFoodData().getSaturationLevel();
-
-                        int foodValue = foodStack.getFoodProperties(null).nutrition();
-                        float saturationValue = foodStack.getFoodProperties(null).saturation();
-
-                        int newFoodLevel = Math.min(currentFoodLevel + foodValue, 20);
-                        float newSaturation = currentSaturation + saturationValue;
-
-                        player.getFoodData().setFoodLevel(newFoodLevel);
-                        player.getFoodData().setSaturation(newSaturation);
-
-                        if (!world.isClientSide()) {
-                            BlockPos blockPos = player.blockPosition();
-                            world.playSound(null, blockPos, SoundEvents.PLAYER_BURP, SoundSource.PLAYERS, 1.0F, 1.0F);
-                        }
-
-                        foodStack.shrink(1);
+    @SubscribeEvent
+    public void onPlayerTick(PlayerTickEvent.Post event) {
+        Player player = event.getEntity();
+        
+        if (!player.level().isClientSide() && isActive) {
+            boolean hasFoodWand = player.getInventory().contains(new ItemStack(this));
+            
+            if (hasFoodWand && player.getFoodData().needsFood()) {
+                for (ItemStack itemStack : player.getInventory().items) {
+                    FoodProperties foodProperties = itemStack.get(DataComponents.FOOD);
+                    if (foodProperties != null) {
+                        player.eat(player.level(), itemStack);
+                        break;
                     }
                 }
             }
         }
-
-        super.inventoryTick(stack, world, entity, slot, selected);
-    }
-
-    private ItemStack findFoodInInventory(Player player) {
-        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
-            ItemStack itemStack = player.getInventory().getItem(i);
-            if (itemStack.has(DataComponents.FOOD)) {
-                return itemStack;
-            }
-        }
-        return ItemStack.EMPTY;
     }
 
     // Tooltip
