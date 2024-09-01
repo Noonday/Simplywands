@@ -17,12 +17,12 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 
-
 import java.util.List;
 
 public class MagneticWand extends Item {
     // Indicates whether the wand is active
     private boolean isActive = false;
+
 
     public MagneticWand(Properties properties) {
         super(properties);
@@ -45,15 +45,14 @@ public class MagneticWand extends Item {
             // Play a sound based on whether the wand is activated or deactivated
             if (isActive) {
                 level.playSound(null, blockPos, SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.BLOCKS, 0.8F, 1.0F); // Normal pitch when activated
-                player.displayClientMessage(Component.literal("Magnet on").withStyle(ChatFormatting.GOLD), true); // Display "Magnet on" in golden color
+                player.displayClientMessage(Component.literal("Magnet on").withStyle(ChatFormatting.GREEN), true); // Display "Magnet on" in green color
             } else {
                 level.playSound(null, blockPos, SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.BLOCKS, 0.8F, 0.5F); // Lower pitch when deactivated
-                player.displayClientMessage(Component.literal("Magnet off").withStyle(ChatFormatting.GOLD), true); // Display "Magnet off" in golden color
+                player.displayClientMessage(Component.literal("Magnet off").withStyle(ChatFormatting.RED), true); // Display "Magnet off" in red color
             }
         }
         return InteractionResultHolder.success(player.getItemInHand(hand));
     }
-
 
     // Event handler: Called every tick for each player
     @SubscribeEvent
@@ -63,12 +62,14 @@ public class MagneticWand extends Item {
         // Check if the player has the wand in their inventory
         boolean hasMagneticWand = player.getInventory().contains(new ItemStack(this));
 
-        // Attract items if the wand is active and present in the player's inventory
-        if (isActive && hasMagneticWand) {
+        // Only attract items if the wand is in the inventory and active
+        if (hasMagneticWand && isActive) {
             attractItems(player);
+        } else if (!hasMagneticWand && isActive) {
+            // Deactivate the wand if it's not in the inventory
+            isActive = false;
         }
     }
-
 
     // Handles the attraction of nearby items towards the player
     private void attractItems(Player player) {
