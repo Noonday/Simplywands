@@ -1,8 +1,10 @@
 package net.bennysmith.simplywands.client;
 
+import net.bennysmith.simplywands.simplywands;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.bennysmith.simplywands.item.custom.OreLocatorWand;
+import net.bennysmith.simplywands.network.HighlightedBlocksPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderStateShard;
@@ -64,6 +66,9 @@ public class OreLocatorWandRenderer {
 
         if (!highlightedBlocks.isEmpty()) {
             renderHighlightedBlocks(event, highlightedBlocks, currentTime);
+
+            // Send highlighted blocks to the server
+           // HighlightedBlocksPacket.sendToServer(highlightedBlocks);
         }
 
         // No need to update the original map as it's the same instance
