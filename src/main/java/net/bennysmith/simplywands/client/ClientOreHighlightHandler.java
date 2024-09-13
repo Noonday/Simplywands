@@ -17,7 +17,7 @@ public class ClientOreHighlightHandler {
     }
 
     public static boolean shouldRender() {
-        return System.currentTimeMillis() < highlightEndTime;
+        return System.currentTimeMillis() < highlightEndTime && !highlightedOres.isEmpty();
     }
 
     public static List<BlockPos> getHighlightedOres() {
