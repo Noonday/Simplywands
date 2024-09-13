@@ -23,4 +23,8 @@ public class ClientOreHighlightHandler {
     public static List<BlockPos> getHighlightedOres() {
         return highlightedOres;
     }
+
+    public static void removeHighlightedOres(List<BlockPos> positionsToRemove) {
+        highlightedOres.removeAll(positionsToRemove);
+    }
 }

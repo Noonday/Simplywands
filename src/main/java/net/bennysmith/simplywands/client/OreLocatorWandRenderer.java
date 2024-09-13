@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -19,6 +20,7 @@ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.joml.Vector3f;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalDouble;
 import java.util.function.BiConsumer;
@@ -71,14 +73,25 @@ public class OreLocatorWandRenderer {
         VertexConsumer builder = Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(OVERLAY_LINES);
 
         Vec3 cameraPos = event.getCamera().getPosition();
+        List<BlockPos> blocksToRemove = new ArrayList<>();
 
         for (BlockPos pos : highlightedBlocks) {
-            Block block = Minecraft.getInstance().level.getBlockState(pos).getBlock();
-            renderOutline(poseStack, pos, block, cameraPos, builder, highlightedBlocks);
+            BlockState state = Minecraft.getInstance().level.getBlockState(pos);
+            if (state.isAir()) {
+                blocksToRemove.add(pos);
+            } else {
+                Block block = state.getBlock();
+                renderOutline(poseStack, pos, block, cameraPos, builder, highlightedBlocks);
+            }
         }
 
         Minecraft.getInstance().renderBuffers().bufferSource().endBatch(OVERLAY_LINES);
         RenderSystem.enableDepthTest();
+
+        // Remove broken blocks from the highlight list
+        if (!blocksToRemove.isEmpty()) {
+            ClientOreHighlightHandler.removeHighlightedOres(blocksToRemove);
+        }
     }
 
     private static void renderOutline(
