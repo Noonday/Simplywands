@@ -13,7 +13,7 @@ public class Config {
     private static final ModConfigSpec.IntValue HIGHLIGHT_RADIUS = BUILDER
             .comment("The radius (in blocks) in which ores will be highlighted")
             .comment("Default: 16")
-            .defineInRange("highlightRadius", 16, 1, 128);
+            .defineInRange("highlightRadius", 16, 1, 64);
 
     private static final ModConfigSpec.LongValue HIGHLIGHT_DURATION_MS = BUILDER
             .comment("The duration (in milliseconds) for which ores will be highlighted")
