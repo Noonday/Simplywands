@@ -16,6 +16,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.neoforge.common.Tags;
+import net.bennysmith.simplywands.network.HighlightOresPayload;
+import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,6 +28,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.ArrayList;
 
 public class OreLocatorWand extends Item {
 
@@ -58,13 +62,12 @@ public class OreLocatorWand extends Item {
 
             if (targetBlock.defaultBlockState().is(Tags.Blocks.ORES)) {
                 if (!level.isClientSide()) {
-                    if (level.getServer() != null && !level.getServer().isSingleplayer()) {
-                        // We're on a dedicated server
-                        displayNearestOre(level, pos, targetBlock, player);
-                    } else {
-                        // We're on an integrated server (singleplayer or LAN)
-                        highlightNearbyOres(level, pos, targetBlock, player);
-                    }
+                    List<BlockPos> orePositions = collectOrePositions(level, pos, targetBlock);
+
+                    // Send payload to client
+                    HighlightOresPayload payload = new HighlightOresPayload(orePositions);
+                    PacketDistributor.sendToPlayer((ServerPlayer) player, payload);
+
                     itemStack.hurtAndBreak(1, player, LivingEntity.getSlotForHand((hand)));
                 }
                 return InteractionResultHolder.success(itemStack);
@@ -78,7 +81,7 @@ public class OreLocatorWand extends Item {
         BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
         BlockPos nearestOre = null;
         double nearestDistance = Double.MAX_VALUE;
-        
+
         for (int x = -Config.highlightRadius; x <= Config.highlightRadius; x++) {
             for (int y = -Config.highlightRadius; y <= Config.highlightRadius; y++) {
                 for (int z = -Config.highlightRadius; z <= Config.highlightRadius; z++) {
@@ -97,7 +100,7 @@ public class OreLocatorWand extends Item {
 
         if (nearestOre != null) {
             String oreName = targetBlock.getName().getString();
-            String message = String.format("Nearest separate %s vein found at: X: %d, Y: %d, Z: %d", 
+            String message = String.format("Nearest separate %s vein found at: X: %d, Y: %d, Z: %d",
                                            oreName, nearestOre.getX(), nearestOre.getY(), nearestOre.getZ());
             player.sendSystemMessage(Component.literal(message));
         } else {
@@ -141,7 +144,7 @@ public class OreLocatorWand extends Item {
     private void highlightNearbyOres(Level level, BlockPos center, Block targetBlock, Player player) {
         long expirationTime = System.currentTimeMillis() + Config.highlightDurationMs;
         lastHighlightTime = System.currentTimeMillis();
-        
+
         BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
         for (int x = -Config.highlightRadius; x <= Config.highlightRadius; x++) {
             for (int y = -Config.highlightRadius; y <= Config.highlightRadius; y++) {
@@ -176,5 +179,26 @@ public class OreLocatorWand extends Item {
 
     public static void removeHighlightedBlock(BlockPos pos) {
         highlightedBlocks.remove(pos);
+    }
+
+    private List<BlockPos> collectOrePositions(Level level, BlockPos center, Block targetBlock) {
+        List<BlockPos> positions = new ArrayList<>();
+        BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
+
+        int radius = Config.highlightRadius;
+        for (int x = -radius; x <= radius; x++) {
+            for (int y = -radius; y <= radius; y++) {
+                for (int z = -radius; z <= radius; z++) {
+                    mutablePos.setWithOffset(center, x, y, z);
+                    if (level.isLoaded(mutablePos)) {
+                        BlockState state = level.getBlockState(mutablePos);
+                        if (state.is(targetBlock)) {
+                            positions.add(mutablePos.immutable());
+                        }
+                    }
+                }
+            }
+        }
+        return positions;
     }
 }

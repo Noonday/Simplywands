@@ -3,7 +3,6 @@ package net.bennysmith.simplywands.client;
 import net.bennysmith.simplywands.simplywands;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import net.bennysmith.simplywands.item.custom.OreLocatorWand;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderStateShard;
@@ -20,13 +19,12 @@ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.joml.Vector3f;
 
 import java.awt.Color;
-import java.util.Map;
+import java.util.List;
 import java.util.OptionalDouble;
 import java.util.function.BiConsumer;
-import java.util.concurrent.ConcurrentHashMap;
 
 @OnlyIn(Dist.CLIENT)
-@EventBusSubscriber(modid = "simplywands", bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
+@EventBusSubscriber(modid = simplywands.MOD_ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public class OreLocatorWandRenderer {
 
     private static final RenderType OVERLAY_LINES = RenderType.create(
@@ -50,40 +48,47 @@ public class OreLocatorWandRenderer {
 
     @SubscribeEvent
     public static void onRenderLevelStage(RenderLevelStageEvent event) {
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) return;
-
-        ConcurrentHashMap<BlockPos, OreLocatorWand.BlockHighlight> highlightedBlocks = OreLocatorWand.getHighlightedBlocks();
-        if (highlightedBlocks.isEmpty()) return;
-
-        long currentTime = System.currentTimeMillis();
-        
-        highlightedBlocks.entrySet().removeIf(entry -> {
-            BlockPos pos = entry.getKey();
-            return currentTime > entry.getValue().expirationTime ||
-                   Minecraft.getInstance().level.getBlockState(pos).isAir();
-        });
-
-        if (!highlightedBlocks.isEmpty()) {
-            renderHighlightedBlocks(event, highlightedBlocks, currentTime);
+        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) {
+            return;
         }
+
+        if (!ClientOreHighlightHandler.shouldRender()) {
+            return;
+        }
+
+        List<BlockPos> highlightedBlocks = ClientOreHighlightHandler.getHighlightedOres();
+        if (highlightedBlocks.isEmpty()) {
+            return;
+        }
+
+        renderHighlightedBlocks(event, highlightedBlocks);
     }
 
-    private static void renderHighlightedBlocks(RenderLevelStageEvent event, Map<BlockPos, OreLocatorWand.BlockHighlight> highlightedBlocks, long currentTime) {
+    private static void renderHighlightedBlocks(RenderLevelStageEvent event, List<BlockPos> highlightedBlocks) {
         PoseStack poseStack = event.getPoseStack();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         RenderSystem.disableDepthTest();
         VertexConsumer builder = Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(OVERLAY_LINES);
 
         Vec3 cameraPos = event.getCamera().getPosition();
-        for (Map.Entry<BlockPos, OreLocatorWand.BlockHighlight> entry : highlightedBlocks.entrySet()) {
-            renderOutline(poseStack, entry.getKey(), entry.getValue().block, cameraPos, builder, highlightedBlocks);
+
+        for (BlockPos pos : highlightedBlocks) {
+            Block block = Minecraft.getInstance().level.getBlockState(pos).getBlock();
+            renderOutline(poseStack, pos, block, cameraPos, builder, highlightedBlocks);
         }
 
         Minecraft.getInstance().renderBuffers().bufferSource().endBatch(OVERLAY_LINES);
         RenderSystem.enableDepthTest();
     }
 
-    private static void renderOutline(PoseStack poseStack, BlockPos pos, Block block, Vec3 cameraPos, VertexConsumer builder, Map<BlockPos, OreLocatorWand.BlockHighlight> highlightedBlocks) {
+    private static void renderOutline(
+            PoseStack poseStack,
+            BlockPos pos,
+            Block block,
+            Vec3 cameraPos,
+            VertexConsumer builder,
+            List<BlockPos> highlightedBlocks
+    ) {
         poseStack.pushPose();
         poseStack.translate(pos.getX() - cameraPos.x, pos.getY() - cameraPos.y, pos.getZ() - cameraPos.z);
 
@@ -102,12 +107,12 @@ public class OreLocatorWandRenderer {
         };
 
         // Check for adjacent blocks and only draw lines if there's no neighbor
-        boolean hasWest = highlightedBlocks.containsKey(pos.west());
-        boolean hasEast = highlightedBlocks.containsKey(pos.east());
-        boolean hasSouth = highlightedBlocks.containsKey(pos.south());
-        boolean hasNorth = highlightedBlocks.containsKey(pos.north());
-        boolean hasAbove = highlightedBlocks.containsKey(pos.above());
-        boolean hasBelow = highlightedBlocks.containsKey(pos.below());
+        boolean hasWest = highlightedBlocks.contains(pos.west());
+        boolean hasEast = highlightedBlocks.contains(pos.east());
+        boolean hasSouth = highlightedBlocks.contains(pos.south());
+        boolean hasNorth = highlightedBlocks.contains(pos.north());
+        boolean hasAbove = highlightedBlocks.contains(pos.above());
+        boolean hasBelow = highlightedBlocks.contains(pos.below());
 
         // Draw horizontal lines
         if (!hasEast && !hasAbove) drawLine.accept(new Vector3f(maxX, maxY, minZ), new Vector3f(maxX, maxY, maxZ));
@@ -127,8 +132,6 @@ public class OreLocatorWandRenderer {
         if (!hasWest && !hasSouth) drawLine.accept(new Vector3f(minX, minY, maxZ), new Vector3f(minX, maxY, maxZ));
 
         poseStack.popPose();
-
-        Minecraft.getInstance().renderBuffers().bufferSource().endBatch(RenderType.lines());
     }
 
     private static Color getColorForBlock(Block block) {

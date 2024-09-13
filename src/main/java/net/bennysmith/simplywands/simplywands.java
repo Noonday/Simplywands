@@ -3,6 +3,8 @@ package net.bennysmith.simplywands;
 import com.mojang.logging.LogUtils;
 import net.bennysmith.simplywands.item.ModCreativeModeTabs;
 import net.bennysmith.simplywands.item.ModItems;
+import net.bennysmith.simplywands.network.ClientPayloadHandler;
+import net.bennysmith.simplywands.network.HighlightOresPayload;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -13,6 +15,8 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import org.slf4j.Logger;
 
 @Mod(simplywands.MOD_ID)
@@ -24,6 +28,7 @@ public class simplywands {
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::clientSetup);
         modEventBus.addListener(this::addCreative);
+        modEventBus.addListener(this::onRegisterPayloadHandlers); // Add this line
 
         ModCreativeModeTabs.register(modEventBus);
         ModItems.register(modEventBus);
@@ -51,5 +56,14 @@ public class simplywands {
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
         // Server starting event handler
+    }
+
+    private void onRegisterPayloadHandlers(RegisterPayloadHandlersEvent event) {
+        PayloadRegistrar registrar = event.registrar("1"); // Protocol version
+        registrar.playToClient(
+                HighlightOresPayload.TYPE,
+                HighlightOresPayload.CODEC,
+                ClientPayloadHandler::handleHighlightOres
+        );
     }
 }
