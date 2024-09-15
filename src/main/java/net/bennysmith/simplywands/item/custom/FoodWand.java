@@ -72,4 +72,14 @@ public class FoodWand extends Item {
         tooltipComponents.add(Component.translatable("tooltip.simplywands.food_wand.tooltip"));
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
     }
+
+    // Disallow enchanting
+    @Override
+    public boolean isEnchantable(ItemStack stack) {
+        return false;
+    }
+    @Override
+    public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
+        return false;
+    }
 }

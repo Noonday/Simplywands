@@ -74,4 +74,14 @@ public class SpongeWand extends Item {
 
         return InteractionResultHolder.pass(player.getItemInHand(hand));  // Pass the action if on the client side
     }
+
+    // Disallow enchanting
+    @Override
+    public boolean isEnchantable(ItemStack stack) {
+        return false;
+    }
+    @Override
+    public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
+        return false;
+    }
 }

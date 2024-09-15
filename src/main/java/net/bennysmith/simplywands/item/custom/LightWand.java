@@ -76,4 +76,14 @@ public class LightWand extends Item {
         // Pass the action if on the client side
         return InteractionResultHolder.pass(player.getItemInHand(hand));
     }
+
+    // Disallow enchanting
+    @Override
+    public boolean isEnchantable(ItemStack stack) {
+        return false;
+    }
+    @Override
+    public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
+        return false;
+    }
 }

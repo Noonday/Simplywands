@@ -160,4 +160,14 @@ public class AccelerationWand extends Item {
                 20, 0.5, 0.5, 0.5, 0.01);
         level.playSound(null, pos, SoundEvents.BREEZE_SHOOT, SoundSource.BLOCKS, 1.0F, 1.0F);
     }
+
+    // Disallow enchanting
+    @Override
+    public boolean isEnchantable(ItemStack stack) {
+        return false;
+    }
+    @Override
+    public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
+        return false;
+    }
 }
