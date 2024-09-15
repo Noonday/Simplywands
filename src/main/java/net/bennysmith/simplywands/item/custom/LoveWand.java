@@ -1,5 +1,6 @@
 package net.bennysmith.simplywands.item.custom;
 
+import net.bennysmith.simplywands.Config;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -51,13 +52,14 @@ public class LoveWand extends Item {
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
         if (isSelected && entity instanceof Player player && !level.isClientSide) {
-            AABB searchArea = player.getBoundingBox().inflate(7.0);    // Radius
+            double lureRange = Config.loveWandLureRange;
+            AABB searchArea = player.getBoundingBox().inflate(lureRange);
             List<Animal> nearbyAnimals = level.getEntitiesOfClass(Animal.class, searchArea,
                     animal -> animal.getAge() == 0 && animal.canFallInLove());
 
             for (Animal animal : nearbyAnimals) {
                 double distance = animal.distanceToSqr(player);
-                if (distance > 4.0 && distance < 49) { // Between 2 and 7 blocks away (7^2 = 49)
+                if (distance > 4.0 && distance < lureRange * lureRange) {
                     animal.getLookControl().setLookAt(player, 10.0F, animal.getMaxHeadXRot());
                     animal.getNavigation().moveTo(player, 1.0);
                 }

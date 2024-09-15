@@ -1,5 +1,6 @@
 package net.bennysmith.simplywands.item.custom;
 
+import net.bennysmith.simplywands.Config;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -43,9 +44,10 @@ public class SpongeWand extends Item {
 
             boolean didRemoveWater = false;  // Track if any water was removed
 
-            for (int x = -3; x <= 3; x++) {
+            int range = Config.spongeWandRange;
+            for (int x = -range; x <= range; x++) {
                 for (int y = -2; y <= 2; y++) {
-                    for (int z = -3; z <= 3; z++) {
+                    for (int z = -range; z <= range; z++) {
                         BlockPos blockPos = playerBBBlockPos.offset(x, y, z);
                         BlockState blockState = level.getBlockState(blockPos);
 
@@ -53,7 +55,6 @@ public class SpongeWand extends Item {
                             level.setBlockAndUpdate(blockPos, Blocks.AIR.defaultBlockState());
                             itemStack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand));
                             didRemoveWater = true;  // Set to true if any water is removed
-
 
                             // Play the sound at the current block position
                             level.playSound(null, blockPos, SoundEvents.BUCKET_FILL, SoundSource.BLOCKS, 1.0F, 1.0F);

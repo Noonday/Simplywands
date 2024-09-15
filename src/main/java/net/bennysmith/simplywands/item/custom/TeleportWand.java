@@ -1,5 +1,6 @@
 package net.bennysmith.simplywands.item.custom;
 
+import net.bennysmith.simplywands.Config;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -19,8 +20,6 @@ import net.minecraft.world.phys.Vec3;
 import java.util.List;
 
 public class TeleportWand extends Item {
-    private static final int TELEPORT_DISTANCE = 10;
-
     public TeleportWand(Properties properties) {
         super(properties);
     }
@@ -40,7 +39,7 @@ public class TeleportWand extends Item {
             Vec3 lookVector = player.getLookAngle();
 
             // Calculate the target position
-            Vec3 targetPos = player.position().add(lookVector.scale(TELEPORT_DISTANCE));
+            Vec3 targetPos = player.position().add(lookVector.scale(Config.teleportWandDistance));
             BlockPos targetBlockPos = new BlockPos((int) targetPos.x, (int) targetPos.y, (int) targetPos.z);
 
             // Check if the target block is not air and is solid
@@ -54,8 +53,6 @@ public class TeleportWand extends Item {
                 // Set a cooldown of 0.5 seconds (10 ticks) after a successful teleport
                 player.getCooldowns().addCooldown(this, 10);
                 return InteractionResultHolder.fail(player.getItemInHand(hand));
-
-
             } else {
                 // Teleport the player
                 player.teleportTo(targetPos.x, targetPos.y+1, targetPos.z);

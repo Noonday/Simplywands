@@ -22,6 +22,8 @@ import net.minecraft.core.particles.ParticleTypes;
 import java.util.List;
 import java.util.Random;
 
+import net.bennysmith.simplywands.Config;
+
 public class GrowthWand extends Item {
     public GrowthWand(Properties properties) {
         super(properties);
@@ -47,10 +49,11 @@ public class GrowthWand extends Item {
             boolean didApplyGrowth = false;
             Random random = new Random();
 
-            // Adjusted X and Z to be -3 to +3 (7x7 area), Y remains unchanged (0)
-            for (int x = -3; x <= 3; x++) {
-                for (int z = -3; z <= 3; z++) {
-                    BlockPos currentPos = blockPos.offset(x, 0, z); // Y is unchanged (0)
+            // Use the configured range
+            int range = Config.growthWandRange;
+            for (int x = -range; x <= range; x++) {
+                for (int z = -range; z <= range; z++) {
+                    BlockPos currentPos = blockPos.offset(x, 0, z);
                     BlockState blockState = level.getBlockState(currentPos);
 
                     // Check if the block is a crop

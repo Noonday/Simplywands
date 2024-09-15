@@ -1,5 +1,6 @@
 package net.bennysmith.simplywands.item.custom;
 
+import net.bennysmith.simplywands.Config;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -53,7 +54,7 @@ public class VeinMinerWand extends Item {
     }
 
     private Set<BlockPos> findVein(Level world, BlockPos pos, Block targetBlock, Set<BlockPos> vein) {
-        if (vein.size() >= 64 || !world.getBlockState(pos).is(targetBlock)) {
+        if (vein.size() >= Config.veinMinerMaxBlocks || !world.getBlockState(pos).is(targetBlock)) {
             return vein;
         }
 

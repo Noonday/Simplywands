@@ -18,6 +18,8 @@ import net.minecraft.world.level.material.Fluids;
 
 import java.util.List;
 
+import net.bennysmith.simplywands.Config;
+
 public class LavaSpongeWand extends Item {
     public LavaSpongeWand(Properties properties) {
         super(properties);
@@ -43,9 +45,10 @@ public class LavaSpongeWand extends Item {
 
             boolean didRemoveLava = false;  // Track if any lava was removed
 
-            for (int x = -2; x <= 2; x++) {
-                for (int y = -2; y <= 2; y++) {
-                    for (int z = -2; z <= 2; z++) {
+            int range = Config.lavaSpongeWandRange;
+            for (int x = -range; x <= range; x++) {
+                for (int y = -range; y <= range; y++) {
+                    for (int z = -range; z <= range; z++) {
                         BlockPos blockPos = playerBBBlockPos.offset(x, y, z);
                         BlockState blockState = level.getBlockState(blockPos);
 

@@ -1,5 +1,6 @@
 package net.bennysmith.simplywands.item.custom;
 
+import net.bennysmith.simplywands.Config;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
@@ -22,7 +23,6 @@ import java.util.List;
 public class MagneticWand extends Item {
     // Indicates whether the wand is active
     private boolean isActive = false;
-
 
     public MagneticWand(Properties properties) {
         super(properties);
@@ -74,9 +74,10 @@ public class MagneticWand extends Item {
     // Handles the attraction of nearby items towards the player
     private void attractItems(Player player) {
         Level level = player.level();
-        // Find all items within a 5-block radius around the player
+        // Find all items within the configured range around the player
+        double range = Config.magneticWandRange;
         List<ItemEntity> items = level.getEntitiesOfClass(ItemEntity.class,
-                player.getBoundingBox().inflate(5.0));
+                player.getBoundingBox().inflate(range));
 
         // Move each item towards the player
         for (ItemEntity item : items) {
@@ -84,8 +85,8 @@ public class MagneticWand extends Item {
             double dy = player.getY() - item.getY();
             double dz = player.getZ() - item.getZ();
 
-            double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);   // Calculate distance
-            double speed = 0.5;                                         // Set the speed of attraction
+            double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);           // Calculate distance
+            double speed = Config.magneticWandSpeed;                            // Set the speed of attraction
 
             // Set the item's movement vector towards the player
             item.setDeltaMovement(dx / distance * speed, dy / distance * speed, dz / distance * speed);

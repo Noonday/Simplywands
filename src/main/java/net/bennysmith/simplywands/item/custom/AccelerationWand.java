@@ -28,8 +28,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.bennysmith.simplywands.Config;
+
 public class AccelerationWand extends Item {
-    private static final int TICK_MULTIPLIER = 256;
     private static final int DURATION = 20; // 1 second (20 ticks)
 
     private final Map<BlockPos, Integer> acceleratedBlocks = new HashMap<>();
@@ -123,7 +124,7 @@ public class AccelerationWand extends Item {
                     BlockEntityTicker<BlockEntity> ticker = (BlockEntityTicker<BlockEntity>) blockState.getTicker(level, blockEntity.getType());
                     if (ticker != null) {
                         // Apply extra ticks to the block entity
-                        for (int i = 0; i < TICK_MULTIPLIER; i++) {
+                        for (int i = 0; i < Config.accelerationTickMultiplier; i++) {
                             ticker.tick(level, blockPos, blockState, blockEntity);
                         }
                     } else {
@@ -134,7 +135,7 @@ public class AccelerationWand extends Item {
 
                 // Apply random tick for blocks that use it (like crops)
                 if (blockState.isRandomlyTicking()) {
-                    for (int i = 0; i < TICK_MULTIPLIER; i++) {
+                    for (int i = 0; i < Config.accelerationTickMultiplier; i++) {
                         blockState.randomTick(level, blockPos, level.random);
                     }
                 }
