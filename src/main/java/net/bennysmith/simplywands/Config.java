@@ -150,16 +150,16 @@ public class Config {
     }
 
     // Public static fields for easy access
-    public static int highlightRadius;
-    public static long highlightDurationMs;
-    public static int accelerationTickMultiplier;
-    public static int growthWandRange;
+    public static int spongeWandRange;
     public static int lavaSpongeWandRange;
-    public static double loveWandLureRange;
+    public static int growthWandRange;
     public static double magneticWandRange;
     public static double magneticWandSpeed;
-    public static int spongeWandRange;
     public static int teleportWandDistance;
+    public static int accelerationTickMultiplier;
+    public static double loveWandLureRange;
+    public static int highlightRadius;
+    public static long highlightDurationMs;
     public static int veinMinerMaxBlocks;
 
     static final ModConfigSpec SPEC = BUILDER.build();
@@ -167,31 +167,31 @@ public class Config {
     @SubscribeEvent
     static void onLoad(final ModConfigEvent event) {
 
-        // Load config for Ore Locator Wand
-        highlightRadius = HIGHLIGHT_RADIUS.get();
-        highlightDurationMs = HIGHLIGHT_DURATION_MS.get();
-
-        // Load config for Acceleration Wand
-        accelerationTickMultiplier = ACCELERATION_TICK_MULTIPLIER.get();
-
-        // Load config for Growth Wand
-        growthWandRange = GROWTH_WAND_RANGE.get();
+        // Load config for Sponge Wand
+        spongeWandRange = SPONGE_WAND_RANGE.get();
 
         // Load config for Lava Sponge Wand
         lavaSpongeWandRange = LAVA_SPONGE_WAND_RANGE.get();
 
-        // Load config for Love Wand
-        loveWandLureRange = LOVE_WAND_LURE_RANGE.get();
+        // Load config for Growth Wand
+        growthWandRange = GROWTH_WAND_RANGE.get();
 
         // Load config for Magnetic Wand
         magneticWandRange = MAGNETIC_WAND_RANGE.get();
         magneticWandSpeed = MAGNETIC_WAND_SPEED.get();
 
-        // Load config for Sponge Wand
-        spongeWandRange = SPONGE_WAND_RANGE.get();
-
         // Load config for Teleport Wand
         teleportWandDistance = TELEPORT_WAND_DISTANCE.get();
+
+        // Load config for Acceleration Wand
+        accelerationTickMultiplier = ACCELERATION_TICK_MULTIPLIER.get();
+
+        // Load config for Love Wand
+        loveWandLureRange = LOVE_WAND_LURE_RANGE.get();
+
+        // Load config for Ore Locator Wand
+        highlightRadius = HIGHLIGHT_RADIUS.get();
+        highlightDurationMs = HIGHLIGHT_DURATION_MS.get();
 
         // Load config for Vein Miner Wand
         veinMinerMaxBlocks = VEIN_MINER_MAX_BLOCKS.get();
