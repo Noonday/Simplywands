@@ -20,6 +20,9 @@ import net.minecraft.world.phys.Vec3;
 import java.util.List;
 
 public class LightWand extends Item {
+    private static final int DEFAULT_LIGHT_LEVEL = 15;
+    private int currentLightLevel = DEFAULT_LIGHT_LEVEL;
+
     public LightWand(Properties properties) {
         super(properties);
     }
@@ -34,10 +37,9 @@ public class LightWand extends Item {
     // Handle right-click action
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        if (!level.isClientSide()) {
-            // Get the item stack
-            ItemStack itemStack = player.getItemInHand(hand);
+        ItemStack itemStack = player.getItemInHand(hand);
 
+        if (!level.isClientSide()) {
             // Perform a ray trace to find the block being targeted
             HitResult hitResult = player.pick(20.0D, 0.0F, false);
 
@@ -57,8 +59,14 @@ public class LightWand extends Item {
                 if (distance <= 5.0) { // Normal block placement reach is 5 blocks
                     // Check if the target block is air or can be replaced
                     if (blockState.isAir() || blockState.canBeReplaced()) {
-                        // Set the block to a light source with light level 15
-                        level.setBlockAndUpdate(placePos, Blocks.LIGHT.defaultBlockState().setValue(LightBlock.LEVEL, 15));
+                        // Get the current light level from the item
+                        int lightLevel = getLightLevel();
+                        if (lightLevel == 0) {
+                            lightLevel = DEFAULT_LIGHT_LEVEL;
+                        }
+
+                        // Set the block to a light source with the stored light level
+                        level.setBlockAndUpdate(placePos, Blocks.LIGHT.defaultBlockState().setValue(LightBlock.LEVEL, lightLevel));
 
                         // Use some durability
                         itemStack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand));
@@ -85,5 +93,36 @@ public class LightWand extends Item {
     @Override
     public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
         return false;
+    }
+
+    // Add this new method to get the current light level
+    public int getLightLevel() {
+        return currentLightLevel;
+    }
+
+    // Change this to public so it can be accessed from the client
+    public void setLightLevel(int level) {
+        currentLightLevel = Math.max(0, Math.min(15, level));
+    }
+
+    public void handleScroll(Player player, double scrollDelta) {
+        if (player.isShiftKeyDown()) {
+            int currentLevel = getLightLevel();
+            int newLevel;
+            if (scrollDelta > 0) {
+                newLevel = Math.min(15, currentLevel + 1);
+            } else {
+                newLevel = Math.max(1, currentLevel - 1);
+            }
+            setLightLevel(newLevel);
+            player.displayClientMessage(Component.literal("Light level set to: " + newLevel), true);
+        }
+    }
+
+    // Modify this method to use the current light level
+    public void handleScrollServer(Player player, int delta) {
+        int newLevel = Math.max(1, Math.min(15, currentLightLevel + delta));
+        setLightLevel(newLevel);
+        player.displayClientMessage(Component.literal("Light level set to: " + newLevel), true);
     }
 }
