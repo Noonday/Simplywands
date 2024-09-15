@@ -34,7 +34,7 @@ public class Config {
             .comment("The range (in blocks) in which the Lava Sponge Wand will remove lava")
             .comment("This determines the radius of the cube area centered on the player")
             .comment("Default: 2 (5x5x5 area)")
-            .defineInRange("lavaSpongeWandRange", 2, 1, 5);
+            .defineInRange("lavaSpongeWandRange", 2, 1, 10);
 
     static {
         BUILDER.pop();
@@ -63,7 +63,7 @@ public class Config {
     private static final ModConfigSpec.DoubleValue MAGNETIC_WAND_RANGE = BUILDER
             .comment("The range (in blocks) in which the Magnetic Wand will attract items")
             .comment("Default: 5.0")
-            .defineInRange("magneticWandRange", 5.0, 1.0, 32.0);
+            .defineInRange("magneticWandRange", 5.0, 1.0, 16.0);
 
     private static final ModConfigSpec.DoubleValue MAGNETIC_WAND_SPEED = BUILDER
             .comment("The speed at which items are attracted to the player")
