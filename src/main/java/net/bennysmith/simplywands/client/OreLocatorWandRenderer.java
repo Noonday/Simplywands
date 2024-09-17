@@ -14,6 +14,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
@@ -42,15 +43,15 @@ public class OreLocatorWandRenderer {
                     .setLayeringState(RenderStateShard.NO_LAYERING)
                     .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
                     .setOutputState(RenderStateShard.ITEM_ENTITY_TARGET)
-                    .setWriteMaskState(RenderStateShard.COLOR_WRITE)
+                    .setWriteMaskState(new RenderStateShard.WriteMaskStateShard(true, false)) // This disables depth writing
                     .setCullState(RenderStateShard.NO_CULL)
                     .setDepthTestState(RenderStateShard.NO_DEPTH_TEST)
                     .createCompositeState(false)
     );
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onRenderLevelStage(RenderLevelStageEvent event) {
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) {
+        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_WEATHER) {
             return;
         }
 
@@ -80,6 +81,7 @@ public class OreLocatorWandRenderer {
             if (state.isAir()) {
                 blocksToRemove.add(pos);
             } else {
+                RenderSystem.disableDepthTest();  // Move this here
                 Block block = state.getBlock();
                 renderOutline(poseStack, pos, block, cameraPos, builder, highlightedBlocks);
             }
