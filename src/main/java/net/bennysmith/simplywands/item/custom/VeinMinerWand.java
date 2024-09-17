@@ -4,6 +4,7 @@ import net.bennysmith.simplywands.Config;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -16,6 +17,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.Tags;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -35,19 +37,33 @@ public class VeinMinerWand extends Item {
     @Override
     public InteractionResult useOn(UseOnContext context) {
         Level world = context.getLevel();
-        BlockPos pos = context.getClickedPos();
-        Block targetBlock = world.getBlockState(pos).getBlock();
+        BlockPos initialPos = context.getClickedPos();
+        Block targetBlock = world.getBlockState(initialPos).getBlock();
         Player player = context.getPlayer();
         InteractionHand hand = context.getHand();
 
-        Set<BlockPos> vein = findVein(world, pos, targetBlock, new HashSet<>());
         if (targetBlock.defaultBlockState().is(Tags.Blocks.ORES)) {
-            for (BlockPos blockPos : vein) {
-                world.destroyBlock(blockPos, true);
+            if (!world.isClientSide()) {
+                Set<BlockPos> vein = findVein(world, initialPos, targetBlock, new HashSet<>());
+                List<ItemStack> allDrops = new ArrayList<>();
+
+                for (BlockPos blockPos : vein) {
+                    // Collect drops without destroying the block yet
+                    List<ItemStack> drops = Block.getDrops(world.getBlockState(blockPos), (ServerLevel) world, blockPos, world.getBlockEntity(blockPos), player, player.getItemInHand(hand));
+                    allDrops.addAll(drops);
+                    // Now destroy the block without dropping items
+                    world.destroyBlock(blockPos, false);
+                }
+
+                // Spawn all collected drops at the initial position
+                for (ItemStack drop : allDrops) {
+                    Block.popResource(world, initialPos, drop);
+                }
+
+                ItemStack itemStack = player.getItemInHand(hand);
+                itemStack.hurtAndBreak(vein.size(), player, LivingEntity.getSlotForHand(hand));
             }
-            ItemStack itemStack = player.getItemInHand(hand);
-            itemStack.hurtAndBreak(vein.size(), player, LivingEntity.getSlotForHand(hand));
-            return InteractionResult.SUCCESS;
+            return InteractionResult.sidedSuccess(world.isClientSide());
         }
 
         return InteractionResult.PASS;
