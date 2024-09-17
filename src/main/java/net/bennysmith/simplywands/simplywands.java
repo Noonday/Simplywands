@@ -42,10 +42,6 @@ public class simplywands {
 
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
 
-        // Remove this line
-        // net.neoforged.neoforge.common.NeoForge.EVENT_BUS.register(new WandScrollHandler());
-
-        // Replace the if statement with this
         if (FMLEnvironment.dist == Dist.CLIENT) {
             modEventBus.addListener(this::clientSetup);
         }
