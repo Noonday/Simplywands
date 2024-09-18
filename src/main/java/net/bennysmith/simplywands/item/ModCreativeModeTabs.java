@@ -32,7 +32,7 @@ public class ModCreativeModeTabs {
                 output.accept(ModItems.ORELOCATOR_WAND.get());
                 output.accept(ModItems.VEIN_MINER_WAND.get());
                 output.accept(ModItems.FOOD_WAND.get());
-                output.accept(ModItems.EXTRA_LIVE_WAND.get());
+                output.accept(ModItems.EXTRA_LIFE_WAND.get());
 
             }).build());
 

@@ -21,11 +21,11 @@ import net.minecraft.world.effect.MobEffectCategory;
 
 import java.util.*;
 
-public class ExtraLiveWand extends Item {
+public class ExtraLifeWand extends Item {
     private static final int HISTORY_LENGTH = 400; // 20 seconds at 20 ticks per second
     private static final Map<UUID, ArrayDeque<PositionEntry>> positionHistory = new HashMap<>();
 
-    public ExtraLiveWand(Properties properties) {
+    public ExtraLifeWand(Properties properties) {
         super(properties);
         NeoForge.EVENT_BUS.register(this);
     }
