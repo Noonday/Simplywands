@@ -1,0 +1,7 @@
+.eclipse/
+.gradle/
+.idea/
+.vscode/
+build/
+run/
+bin/
