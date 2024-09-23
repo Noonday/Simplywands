@@ -46,6 +46,9 @@ public class ModItems {
     public static final DeferredItem<Item> FOOD_WAND =
             ITEMS.registerItem("food_wand", FoodWand::new, new Item.Properties().stacksTo(1));
 
+    public static final DeferredItem<Item> RESURRECTION_WAND =
+            ITEMS.registerItem("resurrection_wand", ResurrectionWand::new, new Item.Properties().stacksTo(1));
+
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);

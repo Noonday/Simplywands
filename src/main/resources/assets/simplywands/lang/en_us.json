@@ -10,6 +10,7 @@
   "item.simplywands.orelocator_wand": "Ore-Locator Wand",
   "item.simplywands.vein_miner_wand": "Vein-Miner Wand",
   "item.simplywands.food_wand": "Food Wand",
+  "item.simplywands.resurrection_wand": "Resurrection Wand",
 
 
 
@@ -24,6 +25,7 @@
   "tooltip.simplywands.orelocator_wand.tooltip": "§8Locate ores.§r",
   "tooltip.simplywands.vein_miner_wand.tooltip": "§8Mines entire veins of ores.§r",
   "tooltip.simplywands.food_wand.tooltip": "§8Automatically eats for you.§r",
+  "tooltip.simplywands.resurrection_wand.tooltip": "§8Break in case of death.§r",
 
 
 

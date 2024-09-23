@@ -150,24 +150,25 @@ public class OreLocatorWandRenderer {
     }
 
     private static Color getColorForBlock(Block block) {
-        if (block == Blocks.DIAMOND_ORE || block == Blocks.DEEPSLATE_DIAMOND_ORE) {
-            return new Color(0, 255, 255); // Cyan for diamond
-        } else if (block == Blocks.REDSTONE_ORE || block == Blocks.DEEPSLATE_REDSTONE_ORE) {
-            return new Color(255, 0, 0); // Red for redstone
-        } else if (block == Blocks.LAPIS_ORE || block == Blocks.DEEPSLATE_LAPIS_ORE) {
-            return new Color(0, 0, 255); // Blue for lapis
-        } else if (block == Blocks.GOLD_ORE || block == Blocks.DEEPSLATE_GOLD_ORE) {
-            return new Color(255, 215, 0); // Gold for gold ore
-        } else if (block == Blocks.IRON_ORE || block == Blocks.DEEPSLATE_IRON_ORE) {
-            return new Color(210, 105, 30); // Brown for iron ore
-        } else if (block == Blocks.EMERALD_ORE || block == Blocks.DEEPSLATE_EMERALD_ORE) {
-            return new Color(0, 255, 0); // Green for emerald
-        } else if (block == Blocks.COAL_ORE || block == Blocks.DEEPSLATE_COAL_ORE) {
-            return new Color(60, 100, 100); // Brighter dark slate gray for coal
-        } else if (block == Blocks.COPPER_ORE || block == Blocks.DEEPSLATE_COPPER_ORE) {
-            return new Color(184, 115, 51); // Copper color
-        } else {
-            return new Color(255, 255, 255); // White for unknown ores
-        }
+        record OreColor(Block[] blocks, Color color) {}
+
+        OreColor[] oreColors = {
+            new OreColor(new Block[]{Blocks.DIAMOND_ORE, Blocks.DEEPSLATE_DIAMOND_ORE}, new Color(0, 255, 255)),
+            new OreColor(new Block[]{Blocks.REDSTONE_ORE, Blocks.DEEPSLATE_REDSTONE_ORE}, new Color(255, 0, 0)),
+            new OreColor(new Block[]{Blocks.LAPIS_ORE, Blocks.DEEPSLATE_LAPIS_ORE}, new Color(0, 0, 255)),
+            new OreColor(new Block[]{Blocks.GOLD_ORE, Blocks.DEEPSLATE_GOLD_ORE}, new Color(255, 215, 0)),
+            new OreColor(new Block[]{Blocks.IRON_ORE, Blocks.DEEPSLATE_IRON_ORE}, new Color(210, 105, 30)),
+            new OreColor(new Block[]{Blocks.EMERALD_ORE, Blocks.DEEPSLATE_EMERALD_ORE}, new Color(0, 255, 0)),
+            new OreColor(new Block[]{Blocks.COAL_ORE, Blocks.DEEPSLATE_COAL_ORE}, new Color(60, 100, 100)),
+            new OreColor(new Block[]{Blocks.COPPER_ORE, Blocks.DEEPSLATE_COPPER_ORE}, new Color(184, 115, 51)),
+            new OreColor(new Block[]{Blocks.NETHER_GOLD_ORE}, new Color(255, 215, 0)),
+            new OreColor(new Block[]{Blocks.NETHER_QUARTZ_ORE}, new Color(128, 128, 128)),
+        };
+
+        return java.util.Arrays.stream(oreColors)
+                .filter(oreColor -> java.util.Arrays.asList(oreColor.blocks).contains(block))
+                .findFirst()
+                .map(OreColor::color)
+                .orElse(new Color(255, 255, 255)); // Default white for unknown ores
     }
 }
