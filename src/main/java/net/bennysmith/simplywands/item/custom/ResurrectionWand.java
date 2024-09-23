@@ -1,11 +1,13 @@
 package net.bennysmith.simplywands.item.custom;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -21,11 +23,11 @@ import net.minecraft.world.effect.MobEffectCategory;
 
 import java.util.*;
 
-public class ExtraLifeWand extends Item {
+public class ResurrectionWand extends Item {
     private static final int HISTORY_LENGTH = 400; // 20 seconds at 20 ticks per second
     private static final Map<UUID, ArrayDeque<PositionEntry>> positionHistory = new HashMap<>();
 
-    public ExtraLifeWand(Properties properties) {
+    public ResurrectionWand(Properties properties) {
         super(properties);
         NeoForge.EVENT_BUS.register(this);
     }
@@ -128,5 +130,22 @@ public class ExtraLifeWand extends Item {
 
         public Vec3 position() { return position; }
         public long timestamp() { return timestamp; }
+    }
+
+    // Tooltip
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        tooltipComponents.add(Component.translatable("tooltip.simplywands.resurrection_wand.tooltip"));
+        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+    }
+
+    // Disallow enchanting
+    @Override
+    public boolean isEnchantable(ItemStack stack) {
+        return false;
+    }
+    @Override
+    public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
+        return false;
     }
 }
