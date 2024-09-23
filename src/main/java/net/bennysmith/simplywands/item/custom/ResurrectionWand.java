@@ -51,35 +51,42 @@ public class ResurrectionWand extends Item {
                 event.setCanceled(true);
                 UUID playerId = player.getUUID();
                 ArrayDeque<PositionEntry> history = positionHistory.get(playerId);
+                Vec3 resurrectionPosition = null;
+                
                 if (history != null && !history.isEmpty()) {
-                    Vec3 pastPosition = findSafePosition(player.level(), history);
-                    if (pastPosition != null) {
-                        player.teleportTo(pastPosition.x, pastPosition.y, pastPosition.z);
-                        player.setHealth(player.getMaxHealth());
-                        player.setAirSupply(player.getMaxAirSupply());
-                        player.fallDistance = 0.0F; // Reset fall distance
-                        player.clearFire(); // Extinguish fire
-                        // Remove negative potion effects
-                        for (MobEffectInstance effect : new ArrayList<>(player.getActiveEffects())) {
-                            if (effect.getEffect().value().getCategory() == MobEffectCategory.HARMFUL) {
-                                player.removeEffect(effect.getEffect());
-                            }
-                        }
-                        // Remove the wand from inventory
-                        player.getInventory().clearOrCountMatchingItems(p -> p.getItem() == this, 1, player.inventoryMenu.getCraftSlots());
-                        
-                        // Play totem sound
-                        player.level().playSound(null, player.getX(), player.getY(), player.getZ(), 
-                                                 SoundEvents.TOTEM_USE, SoundSource.PLAYERS, 
-                                                 1.0F, 1.0F);
-                        
-                        // Spawn totem particles
-                        if (player.level() instanceof ServerLevel serverLevel) {
-                            serverLevel.sendParticles(ParticleTypes.TOTEM_OF_UNDYING, 
+                    resurrectionPosition = findSafePosition(player.level(), history);
+                }
+                
+                // Fallback to current position if no safe position found in history
+                if (resurrectionPosition == null) {
+                    resurrectionPosition = player.position();
+                }
+                
+                // Perform resurrection
+                player.teleportTo(resurrectionPosition.x, resurrectionPosition.y, resurrectionPosition.z);
+                player.setHealth(player.getMaxHealth());
+                player.setAirSupply(player.getMaxAirSupply());
+                player.fallDistance = 0.0F; // Reset fall distance
+                player.clearFire(); // Extinguish fire
+                // Remove negative potion effects
+                for (MobEffectInstance effect : new ArrayList<>(player.getActiveEffects())) {
+                    if (effect.getEffect().value().getCategory() == MobEffectCategory.HARMFUL) {
+                        player.removeEffect(effect.getEffect());
+                    }
+                }
+                // Remove the wand from inventory
+                player.getInventory().clearOrCountMatchingItems(p -> p.getItem() == this, 1, player.inventoryMenu.getCraftSlots());
+                
+                // Play totem sound
+                player.level().playSound(null, player.getX(), player.getY(), player.getZ(), 
+                                                     SoundEvents.TOTEM_USE, SoundSource.PLAYERS, 
+                                                     1.0F, 1.0F);
+                
+                // Spawn totem particles
+                if (player.level() instanceof ServerLevel serverLevel) {
+                    serverLevel.sendParticles(ParticleTypes.TOTEM_OF_UNDYING, 
                                                       player.getX(), player.getY() + 1.0D, player.getZ(), 
                                                       64, 0.0D, 0.0D, 0.0D, 0.5D);
-                        }
-                    }
                 }
             }
         }
