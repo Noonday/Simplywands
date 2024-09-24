@@ -33,14 +33,14 @@ public class simplywands {
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::clientSetup);
         modEventBus.addListener(this::addCreative);
-        modEventBus.addListener(this::onRegisterPayloadHandlers); // Add this line
+        modEventBus.addListener(this::onRegisterPayloadHandlers);
 
         ModCreativeModeTabs.register(modEventBus);
         ModItems.register(modEventBus);
 
         NeoForge.EVENT_BUS.register(this);
 
-        modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        modContainer.registerConfig(ModConfig.Type.SERVER, Config.SERVER_SPEC);
 
         if (FMLEnvironment.dist == Dist.CLIENT) {
             modEventBus.addListener(this::clientSetup);

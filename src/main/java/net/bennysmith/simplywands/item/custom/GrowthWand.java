@@ -71,7 +71,8 @@ public class GrowthWand extends Item {
                                 int newAge = Math.min(currentAge + growthAmount, maxAge);
 
                                 level.setBlockAndUpdate(currentPos, blockState.setValue(ageProperty, newAge));
-                                itemStack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand));
+                                if(Config.growthWandDurability != 0) {
+                                itemStack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand)); }
                                 didApplyGrowth = true;
 
                                 // Spawn bonemeal particles at the crop position
@@ -109,5 +110,11 @@ public class GrowthWand extends Item {
     @Override
     public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
         return false;
+    }
+
+    // Durability
+    @Override
+    public int getMaxDamage(ItemStack stack) {
+        return Config.growthWandDurability;
     }
 }

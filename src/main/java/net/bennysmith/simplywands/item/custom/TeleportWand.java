@@ -72,7 +72,8 @@ public class TeleportWand extends Item {
 
                 // Use some durability
                 ItemStack itemStack = player.getItemInHand(hand);
-                itemStack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand));;
+                if(Config.teleportWandDurability != 0) {
+                itemStack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand)); }
 
                 // Set a cooldown of 1.5 seconds (30 ticks) after a successful teleport
                 player.getCooldowns().addCooldown(this, 30);
@@ -93,5 +94,11 @@ public class TeleportWand extends Item {
     @Override
     public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
         return false;
+    }
+
+    // Durability
+    @Override
+    public int getMaxDamage(ItemStack stack) {
+        return Config.teleportWandDurability;
     }
 }

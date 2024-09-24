@@ -82,7 +82,8 @@ public class AccelerationWand extends Item {
                 // Accelerate the block, damage the wand, add cooldown, and spawn effects
                 accelerateBlock(serverLevel, pos);
                 ItemStack itemStack = player.getItemInHand(hand);
-                itemStack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand));
+                if(Config.accelerationWandDurability != 0) {
+                itemStack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand)); }
                 player.getCooldowns().addCooldown(this, 30);
                 spawnParticlesAndPlaySound(serverLevel, pos);
                 return InteractionResult.SUCCESS;
@@ -169,5 +170,10 @@ public class AccelerationWand extends Item {
     @Override
     public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
         return false;
+    }
+
+    @Override
+    public int getMaxDamage(ItemStack stack) {
+        return Config.accelerationWandDurability;
     }
 }

@@ -61,7 +61,8 @@ public class VeinMinerWand extends Item {
                 }
 
                 ItemStack itemStack = player.getItemInHand(hand);
-                itemStack.hurtAndBreak(vein.size(), player, LivingEntity.getSlotForHand(hand));
+                if(Config.veinMinerWandDurability != 0) {
+                itemStack.hurtAndBreak(vein.size(), player, LivingEntity.getSlotForHand(hand)); }
             }
             return InteractionResult.sidedSuccess(world.isClientSide());
         }
@@ -99,5 +100,11 @@ public class VeinMinerWand extends Item {
     @Override
     public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
         return false;
+    }
+
+    // Durability
+    @Override
+    public int getMaxDamage(ItemStack stack) {
+        return Config.veinMinerWandDurability;
     }
 }

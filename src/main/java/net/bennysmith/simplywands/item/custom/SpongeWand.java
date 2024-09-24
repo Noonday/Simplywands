@@ -53,7 +53,8 @@ public class SpongeWand extends Item {
 
                         if (blockState.getFluidState().is(Fluids.WATER)) {
                             level.setBlockAndUpdate(blockPos, Blocks.AIR.defaultBlockState());
-                            itemStack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand));
+                            if(Config.spongeWandDurability != 0) {
+                            itemStack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand)); }
                             didRemoveWater = true;  // Set to true if any water is removed
 
                             // Play the sound at the current block position
@@ -83,5 +84,10 @@ public class SpongeWand extends Item {
     @Override
     public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
         return false;
+    }
+
+    @Override
+    public int getMaxDamage(ItemStack stack) {
+        return Config.spongeWandDurability;
     }
 }

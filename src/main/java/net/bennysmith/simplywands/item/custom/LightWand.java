@@ -1,5 +1,6 @@
 package net.bennysmith.simplywands.item.custom;
 
+import net.bennysmith.simplywands.Config;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -69,7 +70,8 @@ public class LightWand extends Item {
                         level.setBlockAndUpdate(placePos, Blocks.LIGHT.defaultBlockState().setValue(LightBlock.LEVEL, lightLevel));
 
                         // Use some durability
-                        itemStack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand));
+                        if (Config.lightWandDurability > 0) {
+                        itemStack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand)); }
 
                         // Return success
                         return InteractionResultHolder.success(itemStack);
@@ -124,5 +126,11 @@ public class LightWand extends Item {
         int newLevel = Math.max(1, Math.min(15, currentLightLevel + delta));
         setLightLevel(newLevel);
         player.displayClientMessage(Component.literal("Light level set to: " + newLevel), true);
+    }
+
+    // Durability
+    @Override
+    public int getMaxDamage(ItemStack stack) {
+        return Config.lightWandDurability;
     }
 }

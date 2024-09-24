@@ -48,7 +48,8 @@ public class OreLocatorWand extends Item {
                     HighlightOresPayload payload = new HighlightOresPayload(orePositions);
                     PacketDistributor.sendToPlayer((ServerPlayer) player, payload);
 
-                    itemStack.hurtAndBreak(1, player, LivingEntity.getSlotForHand((hand)));
+                    if(Config.oreLocatorWandDurability != 0) {
+                    itemStack.hurtAndBreak(1, player, LivingEntity.getSlotForHand((hand))); }
                 }
                 return InteractionResultHolder.success(itemStack);
             }
@@ -91,5 +92,11 @@ public class OreLocatorWand extends Item {
     @Override
     public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
         return false;
+    }
+
+    // Durability
+    @Override
+    public int getMaxDamage(ItemStack stack) {
+        return Config.oreLocatorWandDurability;
     }
 }

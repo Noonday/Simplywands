@@ -54,7 +54,8 @@ public class LavaSpongeWand extends Item {
 
                         if (blockState.getFluidState().is(Fluids.LAVA)) {
                             level.setBlockAndUpdate(blockPos, Blocks.AIR.defaultBlockState());
-                            itemStack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand));
+                            if(Config.lavaSpongeWandDurability != 0) {
+                            itemStack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand)); }
                             didRemoveLava = true;  // Set to true if any lava is removed
 
                             // Play the sound for picking up lava
@@ -84,5 +85,11 @@ public class LavaSpongeWand extends Item {
     @Override
     public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
         return false;
+    }
+
+    // Durability
+    @Override
+    public int getMaxDamage(ItemStack stack) {
+        return Config.lavaSpongeWandDurability;
     }
 }

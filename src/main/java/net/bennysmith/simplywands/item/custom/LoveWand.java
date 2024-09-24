@@ -37,7 +37,8 @@ public class LoveWand extends Item {
                 animal.setInLove(player);
 
                 // Use some durability
-                stack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand));
+                if (Config.loveWandDurability != 0) {
+                stack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand)); }
 
                 // Spawn heart particles
                 player.level().addParticle(ParticleTypes.HEART, animal.getX(), animal.getY() + 0.5, animal.getZ(), 0, 0, 0);
@@ -75,6 +76,12 @@ public class LoveWand extends Item {
     @Override
     public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
         return false;
+    }
+
+    // Durability
+    @Override
+    public int getMaxDamage(ItemStack stack) {
+        return Config.loveWandDurability;
     }
 }
 
