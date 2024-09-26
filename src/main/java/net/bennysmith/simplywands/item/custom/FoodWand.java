@@ -35,16 +35,33 @@ public class FoodWand extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         if (!level.isClientSide()) {
-            isActive = !isActive;
-            if (isActive) {
-                level.playSound(null, player.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.8F, 1.0F);
-                player.displayClientMessage(Component.literal("Food Wand activated").withStyle(ChatFormatting.GREEN), true);
-            } else {
-                level.playSound(null, player.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.8F, 0.5F);
-                player.displayClientMessage(Component.literal("Food Wand deactivated").withStyle(ChatFormatting.RED), true);
-            }
+            toggleActive(level, player);
         }
         return InteractionResultHolder.success(player.getItemInHand(hand));
+    }
+
+    public void toggleActive(Level level, Player player) {
+        isActive = !isActive;
+        playToggleSound(level, player);
+        displayToggleMessage(player);
+    }
+
+    private void playToggleSound(Level level, Player player) {
+        if (isActive) {
+            level.playSound(null, player.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.8F, 1.0F);
+            level.playSound(player, player.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.8F, 1.0F);
+        } else {
+            level.playSound(null, player.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.8F, 0.5F);
+            level.playSound(player, player.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.8F, 0.5F);
+        }
+    }
+
+    private void displayToggleMessage(Player player) {
+        if (isActive) {
+            player.displayClientMessage(Component.literal("Food Wand activated").withStyle(ChatFormatting.GREEN), true);
+        } else {
+            player.displayClientMessage(Component.literal("Food Wand deactivated").withStyle(ChatFormatting.RED), true);
+        }
     }
 
     @SubscribeEvent

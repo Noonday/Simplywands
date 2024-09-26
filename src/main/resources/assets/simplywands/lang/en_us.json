@@ -27,7 +27,10 @@
   "tooltip.simplywands.food_wand.tooltip": "§8Automatically eats for you.§r",
   "tooltip.simplywands.resurrection_wand.tooltip": "§8Break in case of death.§r",
 
+  "key.categories.simplywands":  "SimplyWands",
 
+  "key.simplywands.food_wand_toggle_key": "Toggle Food Wand",
+  "key.simplywands.magnetic_wand_toggle_key": "Toggle Magnetic Wand",
 
   "itemGroup.simplywands.simplywands_tab": "SimplyWands"
 }

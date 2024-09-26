@@ -39,19 +39,34 @@ public class MagneticWand extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         if (!level.isClientSide()) {    // Ensure this only runs on the server side
-            isActive = !isActive;       // Toggle the active state
-            BlockPos blockPos = player.blockPosition();
-
-            // Play a sound based on whether the wand is activated or deactivated
-            if (isActive) {
-                level.playSound(null, blockPos, SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.BLOCKS, 0.8F, 1.0F); // Normal pitch when activated
-                player.displayClientMessage(Component.literal("Magnet on").withStyle(ChatFormatting.GREEN), true); // Display "Magnet on" in green color
-            } else {
-                level.playSound(null, blockPos, SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.BLOCKS, 0.8F, 0.5F); // Lower pitch when deactivated
-                player.displayClientMessage(Component.literal("Magnet off").withStyle(ChatFormatting.RED), true); // Display "Magnet off" in red color
-            }
+            toggleActive(level, player);
         }
         return InteractionResultHolder.success(player.getItemInHand(hand));
+    }
+
+    public void toggleActive(Level level, Player player) {
+        isActive = !isActive;
+        playToggleSound(level, player);
+        displayToggleMessage(player);
+    }
+
+    private void playToggleSound(Level level, Player player) {
+        BlockPos blockPos = player.blockPosition();
+        if (isActive) {
+            level.playSound(null, blockPos, SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.8F, 1.0F); // Normal pitch when activated
+            level.playSound(player, blockPos, SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.8F, 1.0F); //
+        } else {
+            level.playSound(null, blockPos, SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.8F, 0.5F); // Lower pitch when deactivated
+            level.playSound(player, blockPos, SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.8F, 0.5F);
+        }
+    }
+
+    private void displayToggleMessage(Player player) {
+        if (isActive) {
+            player.displayClientMessage(Component.literal("Magnet on").withStyle(ChatFormatting.GREEN), true); // Display "Magnet on" in green color
+        } else {
+            player.displayClientMessage(Component.literal("Magnet off").withStyle(ChatFormatting.RED), true); // Display "Magnet off" in red color
+        }
     }
 
     // Event handler: Called every tick for each player
