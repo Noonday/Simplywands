@@ -197,7 +197,8 @@ public class Config {
 
     @SubscribeEvent
     public static void onModConfigEvent(final ModConfigEvent event) {
-        if (event.getConfig().getSpec() == SERVER_SPEC) {
+        // Skip unloading events, only process Loading and Reloading - Should hopefully fix the server shutdown issue.
+        if (!(event instanceof ModConfigEvent.Unloading) && event.getConfig().getSpec() == SERVER_SPEC) {
             bake();
         }
     }
