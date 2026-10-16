@@ -1,8 +1,10 @@
 package net.bennysmith.simplywands.item;
 
 import net.bennysmith.simplywands.Config;
+import net.bennysmith.simplywands.block.ModBlocks;
 import net.bennysmith.simplywands.item.custom.*;
 import net.bennysmith.simplywands.simplywands;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -48,6 +50,11 @@ public class ModItems {
 
     public static final DeferredItem<Item> RESURRECTION_WAND =
             ITEMS.registerItem("resurrection_wand", ResurrectionWand::new, new Item.Properties().stacksTo(1));
+
+    //  Item form for the Wand Pedestal - without this the block has no item, and
+    //  adding it to a creative tab throws "The stack count must be 1"
+    public static final DeferredItem<BlockItem> PEDESTAL =
+            ITEMS.registerItem("pedestal", props -> new BlockItem(ModBlocks.PEDESTAL.get(), props));
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);

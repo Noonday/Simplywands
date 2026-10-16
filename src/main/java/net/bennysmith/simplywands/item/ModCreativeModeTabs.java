@@ -34,6 +34,8 @@ public class ModCreativeModeTabs {
                 output.accept(ModItems.FOOD_WAND.get());
                 output.accept(ModItems.RESURRECTION_WAND.get());
 
+                output.accept(ModItems.PEDESTAL.get());
+
             }).build());
 
 

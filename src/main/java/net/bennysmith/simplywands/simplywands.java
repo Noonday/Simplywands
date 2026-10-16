@@ -1,6 +1,9 @@
 package net.bennysmith.simplywands;
 
 import com.mojang.logging.LogUtils;
+import net.bennysmith.simplywands.block.ModBlocks;
+import net.bennysmith.simplywands.blockentity.ModBlockEntities;
+import net.bennysmith.simplywands.client.PedestalRenderer;
 import net.bennysmith.simplywands.client.WandScrollHandler;
 import net.bennysmith.simplywands.item.ModCreativeModeTabs;
 import net.bennysmith.simplywands.item.ModItems;
@@ -17,6 +20,7 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.util.thread.SidedThreadGroups;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
@@ -24,8 +28,6 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import org.slf4j.Logger;
-import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.api.distmarker.Dist;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -45,17 +47,17 @@ public class simplywands {
         modEventBus.addListener(this::clientSetup);
         modEventBus.addListener(this::addCreative);
         modEventBus.addListener(this::onRegisterPayloadHandlers);
+        modEventBus.addListener(this::registerRenderers);
+        modEventBus.addListener(this::registerCapabilities);
 
+        ModBlocks.register(modEventBus);
+        ModBlockEntities.register(modEventBus);
         ModCreativeModeTabs.register(modEventBus);
         ModItems.register(modEventBus);
 
         NeoForge.EVENT_BUS.register(this);
 
         modContainer.registerConfig(ModConfig.Type.SERVER, Config.SERVER_SPEC);
-
-        if (FMLEnvironment.dist == Dist.CLIENT) {
-            modEventBus.addListener(this::clientSetup);
-        }
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
@@ -68,6 +70,17 @@ public class simplywands {
             NeoForge.EVENT_BUS.register(net.bennysmith.simplywands.client.OreLocatorWandRenderer.class);
             NeoForge.EVENT_BUS.register(new WandScrollHandler());
         });
+    }
+
+    private void registerRenderers(final EntityRenderersEvent.RegisterRenderers event) {
+        event.registerBlockEntityRenderer(ModBlockEntities.PEDESTAL.get(), PedestalRenderer::new);
+    }
+
+    private void registerCapabilities(net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent event) {
+        event.registerBlockEntity(net.neoforged.neoforge.capabilities.Capabilities.ItemHandler.BLOCK,
+                ModBlockEntities.PEDESTAL.get(), (pedestal, side) -> pedestal.getStoredItems());
+        event.registerBlockEntity(net.neoforged.neoforge.capabilities.Capabilities.FluidHandler.BLOCK,
+                ModBlockEntities.PEDESTAL.get(), (pedestal, side) -> pedestal.getFluidHandler());
     }
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {

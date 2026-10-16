@@ -12,6 +12,8 @@
   "item.simplywands.food_wand": "Food Wand",
   "item.simplywands.resurrection_wand": "Resurrection Wand",
 
+  "block.simplywands.pedestal": "Wand Pedestal",
+
 
 
   "tooltip.simplywands.sponge_wand.tooltip": "§8Removes water in a radius.§r",

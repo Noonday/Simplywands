@@ -39,9 +39,48 @@ public class Config {
         public final ModConfigSpec.IntValue veinMinerMaxBlocks;
         public final ModConfigSpec.IntValue veinMinerWandDurability;
         public final ModConfigSpec.IntValue lightWandDurability;
+        public final ModConfigSpec.IntValue pedestalGrowthRange;
+        public final ModConfigSpec.IntValue pedestalMagneticRange;
+        public final ModConfigSpec.IntValue pedestalLoveRange;
+        public final ModConfigSpec.IntValue pedestalFoodRange;
+        public final ModConfigSpec.IntValue pedestalFoodAmount;
+        public final ModConfigSpec.DoubleValue pedestalSaturation;
+        public final ModConfigSpec.IntValue pedestalLightRadius;
+        public final ModConfigSpec.IntValue pedestalVeinRange;
+        public final ModConfigSpec.IntValue pedestalVeinMaxBlocks;
+        public final ModConfigSpec.IntValue pedestalTeleportRangeMultiplier;
+        public final ModConfigSpec.IntValue pedestalOreRadius;
+        public final ModConfigSpec.BooleanValue pedestalResurrectionCrossDimensionEnabled;
+        public final ModConfigSpec.IntValue pedestalAccelerationMultiplier;
+        public final ModConfigSpec.IntValue pedestalOperationInterval;
+        public final ModConfigSpec.IntValue pedestalFluidBuckets;
+        public final ModConfigSpec.DoubleValue pedestalMagnetSpeed;
+        public final ModConfigSpec.IntValue pedestalLightLevel;
+        public final ModConfigSpec.BooleanValue pedestalResurrectionEnabled;
 
         ServerConfig(ModConfigSpec.Builder builder) {
             builder.comment("Simply Wands Configuration");
+
+            builder.push("Pedestal Wands");
+            pedestalGrowthRange = builder.defineInRange("growthRange", 2, 1, 16);
+            pedestalMagneticRange = builder.defineInRange("magneticRange", 10, 1, 64);
+            pedestalLoveRange = builder.defineInRange("loveRange", 7, 1, 32);
+            pedestalFoodRange = builder.defineInRange("foodRange", 7, 1, 32);
+            pedestalFoodAmount = builder.defineInRange("foodAmount", 1, 1, 20);
+            pedestalSaturation = builder.defineInRange("saturation", 0.5, 0.0, 20.0);
+            pedestalLightRadius = builder.defineInRange("lightRadius", 35, 1, 64);
+            pedestalVeinRange = builder.defineInRange("veinRange", 10, 1, 32);
+            pedestalVeinMaxBlocks = builder.defineInRange("veinMaxBlocks", 64, 1, 512);
+            pedestalTeleportRangeMultiplier = builder.defineInRange("teleportRangeMultiplier", 10, 1, 50);
+            pedestalOreRadius = builder.defineInRange("oreRadius", 20, 1, 64);
+            pedestalResurrectionCrossDimensionEnabled = builder.define("resurrectionCrossDimensionEnabled", false);
+            pedestalAccelerationMultiplier = builder.defineInRange("accelerationMultiplier", 16, 1, 1000);
+            pedestalOperationInterval = builder.defineInRange("operationIntervalTicks", 20, 1, 1200);
+            pedestalFluidBuckets = builder.defineInRange("fluidCapacityBuckets", 32, 1, 32);
+            pedestalMagnetSpeed = builder.defineInRange("magnetSpeed", 0.25, 0.05, 2.0);
+            pedestalLightLevel = builder.defineInRange("lightLevel", 15, 1, 15);
+            pedestalResurrectionEnabled = builder.define("resurrectionEnabled", true);
+            builder.pop();
 
             builder.push("Sponge Wand");
             spongeWandRange = builder
@@ -171,6 +210,24 @@ public class Config {
     public static int veinMinerMaxBlocks;
     public static int veinMinerWandDurability;
     public static int lightWandDurability;
+    public static int pedestalGrowthRange;
+    public static int pedestalMagneticRange;
+    public static int pedestalLoveRange;
+    public static int pedestalFoodRange;
+    public static int pedestalFoodAmount;
+    public static double pedestalSaturation;
+    public static int pedestalLightRadius;
+    public static int pedestalVeinRange;
+    public static int pedestalVeinMaxBlocks;
+    public static int pedestalTeleportRangeMultiplier;
+    public static int pedestalOreRadius;
+    public static boolean pedestalResurrectionCrossDimensionEnabled;
+    public static int pedestalAccelerationMultiplier;
+    public static int pedestalOperationInterval;
+    public static int pedestalFluidBuckets;
+    public static double pedestalMagnetSpeed;
+    public static int pedestalLightLevel;
+    public static boolean pedestalResurrectionEnabled;
 
     public static void bake() {
         spongeWandRange = SERVER.spongeWandRange.get();
@@ -193,6 +250,24 @@ public class Config {
         veinMinerMaxBlocks = SERVER.veinMinerMaxBlocks.get();
         veinMinerWandDurability = SERVER.veinMinerWandDurability.get();
         lightWandDurability = SERVER.lightWandDurability.get();
+        pedestalGrowthRange = SERVER.pedestalGrowthRange.get();
+        pedestalMagneticRange = SERVER.pedestalMagneticRange.get();
+        pedestalLoveRange = SERVER.pedestalLoveRange.get();
+        pedestalFoodRange = SERVER.pedestalFoodRange.get();
+        pedestalFoodAmount = SERVER.pedestalFoodAmount.get();
+        pedestalSaturation = SERVER.pedestalSaturation.get();
+        pedestalLightRadius = SERVER.pedestalLightRadius.get();
+        pedestalVeinRange = SERVER.pedestalVeinRange.get();
+        pedestalVeinMaxBlocks = SERVER.pedestalVeinMaxBlocks.get();
+        pedestalTeleportRangeMultiplier = SERVER.pedestalTeleportRangeMultiplier.get();
+        pedestalOreRadius = SERVER.pedestalOreRadius.get();
+        pedestalResurrectionCrossDimensionEnabled = SERVER.pedestalResurrectionCrossDimensionEnabled.get();
+        pedestalAccelerationMultiplier = SERVER.pedestalAccelerationMultiplier.get();
+        pedestalOperationInterval = SERVER.pedestalOperationInterval.get();
+        pedestalFluidBuckets = SERVER.pedestalFluidBuckets.get();
+        pedestalMagnetSpeed = SERVER.pedestalMagnetSpeed.get();
+        pedestalLightLevel = SERVER.pedestalLightLevel.get();
+        pedestalResurrectionEnabled = SERVER.pedestalResurrectionEnabled.get();
     }
 
     @SubscribeEvent
