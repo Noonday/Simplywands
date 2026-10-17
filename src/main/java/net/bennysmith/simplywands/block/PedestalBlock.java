@@ -62,10 +62,14 @@ public class PedestalBlock extends BaseEntityBlock {
         if (pedestal.getWand().isEmpty()) {
             return InteractionResult.PASS;
         }
-        if (level.isClientSide()) {
-            //  Swing only - the server does the actual inventory work
-            return InteractionResult.SUCCESS;
+        if (level.isClientSide()) return InteractionResult.SUCCESS;
+        if (!player.isShiftKeyDown() && player.getMainHandItem().is(net.bennysmith.simplywands.item.ModItems.TELEPORT_WAND.get())
+                && pedestal.hasWand(net.bennysmith.simplywands.item.ModItems.TELEPORT_WAND.get())
+                && pedestal.teleport(player)) {
+            return InteractionResult.CONSUME;
         }
+        //  Everything below here is removal. An Ore Locator must stay removable with an empty
+        //  hand - its highlight-on-block-item path lives in useItemOn, not here.
         if (!player.getInventory().add(pedestal.getWand())) {
             return InteractionResult.FAIL;
         }
@@ -80,20 +84,28 @@ public class PedestalBlock extends BaseEntityBlock {
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
                                              Player player, InteractionHand hand, BlockHitResult hitResult) {
+        if (!(level.getBlockEntity(pos) instanceof PedestalBlockEntity pedestal)) {
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        }
+        if (!pedestal.getWand().isEmpty()) {
+            if (!player.isShiftKeyDown() && stack.is(net.bennysmith.simplywands.item.ModItems.TELEPORT_WAND.get())
+                    && pedestal.hasWand(net.bennysmith.simplywands.item.ModItems.TELEPORT_WAND.get())) {
+                if (!level.isClientSide() && pedestal.teleport(player)) return ItemInteractionResult.CONSUME;
+                return ItemInteractionResult.sidedSuccess(level.isClientSide());
+            }
+            if (!stack.isEmpty() && pedestal.hasWand(net.bennysmith.simplywands.item.ModItems.ORELOCATOR_WAND.get())
+                    && stack.getItem() instanceof BlockItem blockItem) {
+                if (!level.isClientSide()) pedestal.highlight(player, blockItem.getBlock());
+                return ItemInteractionResult.sidedSuccess(level.isClientSide());
+            }
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        }
         if (stack.isEmpty() || !isWand(stack)) {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
-        if (!(level.getBlockEntity(pos) instanceof PedestalBlockEntity pedestal) || !pedestal.getWand().isEmpty()) {
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-        }
         if (!level.isClientSide()) {
-            ItemStack displayed = stack.copy();
-            displayed.setCount(1);
-            pedestal.setWand(displayed);
-
-            if (!player.getAbilities().instabuild) {
-                stack.shrink(1);
-            }
+            pedestal.setWandFrom(player, stack.copyWithCount(1));
+            if (!player.getAbilities().instabuild) stack.shrink(1);
         }
         return ItemInteractionResult.sidedSuccess(level.isClientSide());
     }

@@ -47,6 +47,13 @@ public class ResurrectionWand extends Item {
     @SubscribeEvent
     public void onLivingDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof Player player && !player.level().isClientSide) {
+            //  A pedestal station holding the player's resurrection wand takes priority. Resurrect()
+            //  only reports success once it has actually moved the player, so the death must be
+            //  cancelled here or they die anyway.
+            if (net.bennysmith.simplywands.blockentity.PedestalBlockEntity.resurrect(player)) {
+                event.setCanceled(true);
+                return;
+            }
             if (player.getInventory().hasAnyOf(Set.of(this))) {
                 event.setCanceled(true);
                 UUID playerId = player.getUUID();

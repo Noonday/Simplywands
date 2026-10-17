@@ -11,6 +11,7 @@ import net.bennysmith.simplywands.network.ChangeLightLevelPayload;
 import net.bennysmith.simplywands.network.ClientPayloadHandler;
 import net.bennysmith.simplywands.network.HighlightOresPayload;
 import net.bennysmith.simplywands.network.ServerPayloadHandler;
+import net.bennysmith.simplywands.network.TeleportToPedestalPayload;
 import net.minecraft.util.Tuple;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -68,6 +69,7 @@ public class simplywands {
         // Client-only setup code
         event.enqueueWork(() -> {
             NeoForge.EVENT_BUS.register(net.bennysmith.simplywands.client.OreLocatorWandRenderer.class);
+            NeoForge.EVENT_BUS.register(net.bennysmith.simplywands.client.TeleportStationRenderer.class);
             NeoForge.EVENT_BUS.register(new WandScrollHandler());
         });
     }
@@ -111,6 +113,11 @@ public class simplywands {
                 HighlightOresPayload.TYPE,
                 HighlightOresPayload.CODEC,
                 ClientPayloadHandler::handleHighlightOres
+        );
+        registrar.playToServer(
+                TeleportToPedestalPayload.TYPE,
+                TeleportToPedestalPayload.CODEC,
+                ServerPayloadHandler::handleTeleportToPedestal
         );
         registrar.playToServer(
                 ChangeLightLevelPayload.TYPE,

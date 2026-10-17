@@ -12,7 +12,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 
-//  Draws the item stored in a pedestal, floating and slowly spinning above it
+//  Draws the item stored in a pedestal, floating and slowly spinning above it.
+//  Every wand is drawn here, Teleport Wand included - TeleportStationRenderer only adds the
+//  waypoint outline and name plate around it.
 public class PedestalRenderer implements BlockEntityRenderer<PedestalBlockEntity> {
     //  Item centre, in blocks above the pedestal's own block origin. The model's
     //  topmost geometry (floating_ring) reaches 15.75/16 = 0.984, so this clears it.
@@ -27,22 +29,12 @@ public class PedestalRenderer implements BlockEntityRenderer<PedestalBlockEntity
 
     private final Minecraft minecraft = Minecraft.getInstance();
 
-    //  TEMPORARY DIAGNOSTIC - logs once, then stays quiet. Delete this field and
-    //  the block below it once the floating wand is confirmed working.
-    private static boolean loggedOnce = false;
-
     public PedestalRenderer(BlockEntityRendererProvider.Context context) {
     }
 
     @Override
     public void render(PedestalBlockEntity pedestal, float partialTick, PoseStack poseStack,
                        MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
-        if (!loggedOnce) {
-            loggedOnce = true;
-            System.out.println("[SimplyWands] PedestalRenderer.render REACHED, pos="
-                    + pedestal.getBlockPos() + " wand=" + pedestal.getWand());
-        }
-
         ItemStack wand = pedestal.getWand();
         if (wand.isEmpty()) {
             return;

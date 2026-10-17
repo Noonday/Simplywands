@@ -44,11 +44,14 @@ public class Config {
         public final ModConfigSpec.IntValue pedestalLoveRange;
         public final ModConfigSpec.IntValue pedestalFoodRange;
         public final ModConfigSpec.IntValue pedestalFoodAmount;
+        public final ModConfigSpec.IntValue pedestalFoodUnitsPerDamage;
         public final ModConfigSpec.DoubleValue pedestalSaturation;
         public final ModConfigSpec.IntValue pedestalLightRadius;
+        public final ModConfigSpec.IntValue pedestalLightMaxBlocks;
         public final ModConfigSpec.IntValue pedestalVeinRange;
         public final ModConfigSpec.IntValue pedestalVeinMaxBlocks;
         public final ModConfigSpec.IntValue pedestalTeleportRangeMultiplier;
+        public final ModConfigSpec.IntValue pedestalTeleportCooldownTicks;
         public final ModConfigSpec.IntValue pedestalOreRadius;
         public final ModConfigSpec.BooleanValue pedestalResurrectionCrossDimensionEnabled;
         public final ModConfigSpec.IntValue pedestalAccelerationMultiplier;
@@ -61,26 +64,17 @@ public class Config {
         ServerConfig(ModConfigSpec.Builder builder) {
             builder.comment("Simply Wands Configuration");
 
-            builder.push("Pedestal Wands");
-            pedestalGrowthRange = builder.defineInRange("growthRange", 2, 1, 16);
-            pedestalMagneticRange = builder.defineInRange("magneticRange", 10, 1, 64);
-            pedestalLoveRange = builder.defineInRange("loveRange", 7, 1, 32);
-            pedestalFoodRange = builder.defineInRange("foodRange", 7, 1, 32);
-            pedestalFoodAmount = builder.defineInRange("foodAmount", 1, 1, 20);
-            pedestalSaturation = builder.defineInRange("saturation", 0.5, 0.0, 20.0);
-            pedestalLightRadius = builder.defineInRange("lightRadius", 35, 1, 64);
-            pedestalVeinRange = builder.defineInRange("veinRange", 10, 1, 32);
-            pedestalVeinMaxBlocks = builder.defineInRange("veinMaxBlocks", 64, 1, 512);
-            pedestalTeleportRangeMultiplier = builder.defineInRange("teleportRangeMultiplier", 10, 1, 50);
-            pedestalOreRadius = builder.defineInRange("oreRadius", 20, 1, 64);
-            pedestalResurrectionCrossDimensionEnabled = builder.define("resurrectionCrossDimensionEnabled", false);
-            pedestalAccelerationMultiplier = builder.defineInRange("accelerationMultiplier", 16, 1, 1000);
-            pedestalOperationInterval = builder.defineInRange("operationIntervalTicks", 20, 1, 1200);
-            pedestalFluidBuckets = builder.defineInRange("fluidCapacityBuckets", 32, 1, 32);
-            pedestalMagnetSpeed = builder.defineInRange("magnetSpeed", 0.25, 0.05, 2.0);
-            pedestalLightLevel = builder.defineInRange("lightLevel", 15, 1, 15);
-            pedestalResurrectionEnabled = builder.define("resurrectionEnabled", true);
+            //  Only settings shared by every pedestal wand live here. Each wand's own
+            //  pedestal settings sit in that wand's section below.
+            builder.push("Pedestals");
+            pedestalOperationInterval = builder
+                    .comment("The number of ticks between pedestal wand operations")
+                    .defineInRange("operationIntervalTicks", 20, 1, 1200);
+            pedestalFluidBuckets = builder
+                    .comment("The number of buckets a pedestal-held sponge wand can hold")
+                    .defineInRange("fluidCapacityBuckets", 32, 1, 32);
             builder.pop();
+
 
             builder.push("Sponge Wand");
             spongeWandRange = builder
@@ -116,6 +110,9 @@ public class Config {
                     .comment("The durability of the Growth Wand")
                     .comment("Default: 128 (0 = unlimited)")
                     .defineInRange("growthWandDurability", 128, 0, Integer.MAX_VALUE);
+            pedestalGrowthRange = builder
+                    .comment("The radius (in blocks) in which a pedestal-held Growth Wand bonemeals crops")
+                    .defineInRange("pedestalGrowthRange", 2, 1, 16);
             builder.pop();
 
             builder.push("Magnetic Wand");
@@ -125,6 +122,12 @@ public class Config {
             magneticWandSpeed = builder
                     .comment("The speed at which items are attracted to the player")
                     .defineInRange("magneticWandSpeed", 0.5, 0.1, 2.0);
+            pedestalMagneticRange = builder
+                    .comment("The radius (in blocks) in which a pedestal-held Magnetic Wand pulls items")
+                    .defineInRange("pedestalMagneticRange", 10, 1, 64);
+            pedestalMagnetSpeed = builder
+                    .comment("The speed at which a pedestal-held Magnetic Wand pulls items")
+                    .defineInRange("pedestalMagnetSpeed", 0.25, 0.05, 2.0);
             builder.pop();
 
             builder.push("Teleport Wand");
@@ -135,6 +138,12 @@ public class Config {
                     .comment("The durability of the Teleport Wand")
                     .comment("Default: 10 (0 = unlimited)")
                     .defineInRange("teleportWandDurability", 10, 0, Integer.MAX_VALUE);
+            pedestalTeleportRangeMultiplier = builder
+                    .comment("Multiplier applied to the Teleport Wand distance when travelling to a pedestal station")
+                    .defineInRange("pedestalTeleportRangeMultiplier", 10, 1, 50);
+            pedestalTeleportCooldownTicks = builder
+                    .comment("The ticks a pedestal station must wait between teleports")
+                    .defineInRange("pedestalTeleportCooldownTicks", 20, 0, 1200);
             builder.pop();
 
             builder.push("Light Wand");
@@ -142,6 +151,15 @@ public class Config {
                     .comment("The durability of the Light Wand")
                     .comment("Default: 64 (0 = unlimited)")
                     .defineInRange("lightWandDurability", 64, 0, Integer.MAX_VALUE);
+            pedestalLightLevel = builder
+                    .comment("The light level of each block a pedestal-held Light Wand places")
+                    .defineInRange("pedestalLightLevel", 15, 1, 15);
+            pedestalLightRadius = builder
+                    .comment("The radius (in blocks) a pedestal-held Light Wand lights")
+                    .defineInRange("pedestalLightRadius", 35, 1, 64);
+            pedestalLightMaxBlocks = builder
+                    .comment("The most light blocks a pedestal-held Light Wand may place")
+                    .defineInRange("pedestalLightMaxBlocks", 256, 1, 4096);
             builder.pop();
 
             builder.push("Acceleration Wand");
@@ -152,6 +170,9 @@ public class Config {
                     .comment("The durability of the Acceleration Wand")
                     .comment("Default: 48 (0 = unlimited)")
                     .defineInRange("accelerationWandDurability", 48, 0, Integer.MAX_VALUE);
+            pedestalAccelerationMultiplier = builder
+                    .comment("The number of extra ticks a pedestal-held Acceleration Wand applies")
+                    .defineInRange("pedestalAccelerationMultiplier", 16, 1, 1000);
             builder.pop();
 
             builder.push("Love Wand");
@@ -162,6 +183,9 @@ public class Config {
                     .comment("The durability of the Love Wand")
                     .comment("Default: 64 (0 = unlimited)")
                     .defineInRange("loveWandDurability", 64, 0, Integer.MAX_VALUE);
+            pedestalLoveRange = builder
+                    .comment("The radius (in blocks) in which a pedestal-held Love Wand pairs animals")
+                    .defineInRange("pedestalLoveRange", 7, 1, 32);
             builder.pop();
 
             builder.push("Ore-Locator Wand");
@@ -175,6 +199,9 @@ public class Config {
                     .comment("The durability of the Ore-Locator Wand")
                     .comment("Default: 64 (0 = unlimited)")
                     .defineInRange("oreLocatorWandDurability", 64, 0, Integer.MAX_VALUE);
+            pedestalOreRadius = builder
+                    .comment("The radius (in blocks) a pedestal-held Ore-Locator Wand searches")
+                    .defineInRange("pedestalOreRadius", 20, 1, 64);
             builder.pop();
 
             builder.push("Vein Miner Wand");
@@ -185,6 +212,36 @@ public class Config {
                     .comment("The durability of the Vein Miner Wand")
                     .comment("Default: 1562 (0 = unlimited)")
                     .defineInRange("veinMinerWandDurability", 1562, 0, Integer.MAX_VALUE);
+            pedestalVeinRange = builder
+                    .comment("The radius (in blocks) a pedestal-held Vein Miner Wand searches")
+                    .defineInRange("pedestalVeinRange", 10, 1, 32);
+            pedestalVeinMaxBlocks = builder
+                    .comment("The most blocks a pedestal-held Vein Miner Wand breaks in one operation")
+                    .defineInRange("pedestalVeinMaxBlocks", 64, 1, 512);
+            builder.pop();
+
+            builder.push("Food Wand");
+            pedestalFoodRange = builder
+                    .comment("The radius (in blocks) in which a pedestal-held Food Wand feeds players")
+                    .defineInRange("pedestalFoodRange", 7, 1, 32);
+            pedestalFoodAmount = builder
+                    .comment("The food points restored by one pedestal-held Food Wand operation")
+                    .defineInRange("pedestalFoodAmount", 1, 1, 20);
+            pedestalSaturation = builder
+                    .comment("The saturation modifier used by a pedestal-held Food Wand")
+                    .defineInRange("pedestalSaturation", 0.5, 0.0, 20.0);
+            pedestalFoodUnitsPerDamage = builder
+                    .comment("The food points granted before a pedestal-held Food Wand loses one durability")
+                    .defineInRange("pedestalFoodUnitsPerDamage", 20, 1, 1000);
+            builder.pop();
+
+            builder.push("Resurrection Wand");
+            pedestalResurrectionEnabled = builder
+                    .comment("Whether a pedestal-held Resurrection Wand can rescue its owner")
+                    .define("pedestalResurrectionEnabled", true);
+            pedestalResurrectionCrossDimensionEnabled = builder
+                    .comment("Whether a pedestal station can rescue its owner from another dimension")
+                    .define("pedestalResurrectionCrossDimensionEnabled", false);
             builder.pop();
         }
     }
@@ -215,11 +272,14 @@ public class Config {
     public static int pedestalLoveRange;
     public static int pedestalFoodRange;
     public static int pedestalFoodAmount;
+    public static int pedestalFoodUnitsPerDamage;
     public static double pedestalSaturation;
     public static int pedestalLightRadius;
+    public static int pedestalLightMaxBlocks;
     public static int pedestalVeinRange;
     public static int pedestalVeinMaxBlocks;
     public static int pedestalTeleportRangeMultiplier;
+    public static int pedestalTeleportCooldownTicks;
     public static int pedestalOreRadius;
     public static boolean pedestalResurrectionCrossDimensionEnabled;
     public static int pedestalAccelerationMultiplier;
@@ -255,11 +315,14 @@ public class Config {
         pedestalLoveRange = SERVER.pedestalLoveRange.get();
         pedestalFoodRange = SERVER.pedestalFoodRange.get();
         pedestalFoodAmount = SERVER.pedestalFoodAmount.get();
+        pedestalFoodUnitsPerDamage = SERVER.pedestalFoodUnitsPerDamage.get();
         pedestalSaturation = SERVER.pedestalSaturation.get();
         pedestalLightRadius = SERVER.pedestalLightRadius.get();
+        pedestalLightMaxBlocks = SERVER.pedestalLightMaxBlocks.get();
         pedestalVeinRange = SERVER.pedestalVeinRange.get();
         pedestalVeinMaxBlocks = SERVER.pedestalVeinMaxBlocks.get();
         pedestalTeleportRangeMultiplier = SERVER.pedestalTeleportRangeMultiplier.get();
+        pedestalTeleportCooldownTicks = SERVER.pedestalTeleportCooldownTicks.get();
         pedestalOreRadius = SERVER.pedestalOreRadius.get();
         pedestalResurrectionCrossDimensionEnabled = SERVER.pedestalResurrectionCrossDimensionEnabled.get();
         pedestalAccelerationMultiplier = SERVER.pedestalAccelerationMultiplier.get();
