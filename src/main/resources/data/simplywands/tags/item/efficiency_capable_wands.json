@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "simplywands:sponge_wand",
+    "simplywands:lavasponge_wand",
+    "simplywands:growth_wand",
+    "simplywands:love_wand",
+    "simplywands:vein_miner_wand",
+    "simplywands:acceleration_wand"
+  ]
+}

@@ -21,27 +21,37 @@ public class Config {
         // Config options for each wand
         public final ModConfigSpec.IntValue spongeWandRange;
         public final ModConfigSpec.IntValue spongeWandDurability;
+        public final ModConfigSpec.IntValue spongeWandEfficiencyRange;
+        public final ModConfigSpec.IntValue pedestalSpongeEfficiencyInterval;
         public final ModConfigSpec.IntValue lavaSpongeWandRange;
         public final ModConfigSpec.IntValue lavaSpongeWandDurability;
+        public final ModConfigSpec.IntValue lavaSpongeWandEfficiencyRange;
+        public final ModConfigSpec.IntValue pedestalLavaSpongeEfficiencyRange;
         public final ModConfigSpec.IntValue growthWandRange;
         public final ModConfigSpec.IntValue growthWandDurability;
+        public final ModConfigSpec.IntValue growthWandEfficiencyRange;
         public final ModConfigSpec.DoubleValue magneticWandRange;
         public final ModConfigSpec.DoubleValue magneticWandSpeed;
         public final ModConfigSpec.IntValue teleportWandDistance;
         public final ModConfigSpec.IntValue teleportWandDurability;
         public final ModConfigSpec.IntValue accelerationTickMultiplier;
         public final ModConfigSpec.IntValue accelerationWandDurability;
+        public final ModConfigSpec.IntValue accelerationWandEfficiencyTicks;
         public final ModConfigSpec.DoubleValue loveWandLureRange;
         public final ModConfigSpec.IntValue loveWandDurability;
+        public final ModConfigSpec.IntValue loveWandEfficiencyRange;
         public final ModConfigSpec.IntValue highlightRadius;
         public final ModConfigSpec.LongValue highlightDurationMs;
         public final ModConfigSpec.IntValue oreLocatorWandDurability;
         public final ModConfigSpec.IntValue veinMinerMaxBlocks;
+        public final ModConfigSpec.IntValue veinMinerEfficiencyBlocks;
         public final ModConfigSpec.IntValue veinMinerWandDurability;
         public final ModConfigSpec.IntValue lightWandDurability;
         public final ModConfigSpec.IntValue pedestalGrowthRange;
+        public final ModConfigSpec.IntValue pedestalGrowthEfficiencyRange;
         public final ModConfigSpec.IntValue pedestalMagneticRange;
         public final ModConfigSpec.IntValue pedestalLoveRange;
+        public final ModConfigSpec.IntValue pedestalLoveEfficiencyRange;
         public final ModConfigSpec.IntValue pedestalFoodRange;
         public final ModConfigSpec.IntValue pedestalFoodAmount;
         public final ModConfigSpec.IntValue pedestalFoodUnitsPerDamage;
@@ -50,11 +60,13 @@ public class Config {
         public final ModConfigSpec.IntValue pedestalLightMaxBlocks;
         public final ModConfigSpec.IntValue pedestalVeinRange;
         public final ModConfigSpec.IntValue pedestalVeinMaxBlocks;
+        public final ModConfigSpec.IntValue pedestalVeinEfficiencyBlocks;
         public final ModConfigSpec.IntValue pedestalTeleportRangeMultiplier;
         public final ModConfigSpec.IntValue pedestalTeleportCooldownTicks;
         public final ModConfigSpec.IntValue pedestalOreRadius;
         public final ModConfigSpec.BooleanValue pedestalResurrectionCrossDimensionEnabled;
         public final ModConfigSpec.IntValue pedestalAccelerationMultiplier;
+        public final ModConfigSpec.IntValue pedestalAccelerationEfficiencyTicks;
         public final ModConfigSpec.IntValue pedestalOperationInterval;
         public final ModConfigSpec.IntValue pedestalFluidBuckets;
         public final ModConfigSpec.DoubleValue pedestalMagnetSpeed;
@@ -86,6 +98,17 @@ public class Config {
                     .comment("The durability of the Sponge Wand")
                     .comment("Default: 256 (0 = unlimited)")
                     .defineInRange("spongeWandDurability", 256, 0, Integer.MAX_VALUE);
+            pedestalSpongeEfficiencyInterval = builder
+                    .comment("The ticks each Efficiency level takes off a pedestal-held Sponge Wand's operation interval",
+                            "Interval = operationIntervalTicks - (Efficiency level * this value), never below 1 tick",
+                            "The pedestal Sponge has no radius for Efficiency to widen, so Efficiency speeds it up instead",
+                            "Default: 4 (0 = Efficiency has no effect)")
+                    .defineInRange("pedestalSpongeEfficiencyInterval", 4, 0, 1000);
+            spongeWandEfficiencyRange = builder
+                    .comment("The extra range each Efficiency level adds to the Sponge Wand",
+                            "Range = spongeWandRange + (Efficiency level * this value)",
+                            "Default: 1 (0 = Efficiency has no effect)")
+                    .defineInRange("spongeWandEfficiencyRange", 1, 0, 16);
             builder.pop();
 
             builder.push("Lava Sponge Wand");
@@ -98,6 +121,16 @@ public class Config {
                     .comment("The durability of the Lava Sponge Wand")
                     .comment("Default: 512 (0 = unlimited)")
                     .defineInRange("lavaSpongeWandDurability", 512, 0, Integer.MAX_VALUE);
+            lavaSpongeWandEfficiencyRange = builder
+                    .comment("The extra range each Efficiency level adds to the Lava Sponge Wand",
+                            "Range = lavaSpongeWandRange + (Efficiency level * this value)",
+                            "Default: 1 (0 = Efficiency has no effect)")
+                    .defineInRange("lavaSpongeWandEfficiencyRange", 1, 0, 16);
+            pedestalLavaSpongeEfficiencyRange = builder
+                    .comment("The extra range each Efficiency level adds to a pedestal-held Lava Sponge Wand",
+                            "The pedestal lava drain shares lavaSpongeWandRange, so it uses this bonus too",
+                            "Default: 1 (0 = Efficiency has no effect)")
+                    .defineInRange("pedestalLavaSpongeEfficiencyRange", 1, 0, 16);
             builder.pop();
 
             builder.push("Growth Wand");
@@ -113,6 +146,16 @@ public class Config {
             pedestalGrowthRange = builder
                     .comment("The radius (in blocks) in which a pedestal-held Growth Wand bonemeals crops")
                     .defineInRange("pedestalGrowthRange", 2, 1, 16);
+            growthWandEfficiencyRange = builder
+                    .comment("The extra range each Efficiency level adds to the Growth Wand",
+                            "Range = growthWandRange + (Efficiency level * this value)",
+                            "Default: 1 (0 = Efficiency has no effect)")
+                    .defineInRange("growthWandEfficiencyRange", 1, 0, 16);
+            pedestalGrowthEfficiencyRange = builder
+                    .comment("The extra range each Efficiency level adds to a pedestal-held Growth Wand",
+                            "Range = pedestalGrowthRange + (Efficiency level * this value)",
+                            "Default: 1 (0 = Efficiency has no effect)")
+                    .defineInRange("pedestalGrowthEfficiencyRange", 1, 0, 16);
             builder.pop();
 
             builder.push("Magnetic Wand");
@@ -166,6 +209,11 @@ public class Config {
             accelerationTickMultiplier = builder
                     .comment("The number of extra ticks applied when accelerating a block")
                     .defineInRange("accelerationTickMultiplier", 256, 1, 1000);
+            accelerationWandEfficiencyTicks = builder
+                    .comment("The extra ticks each Efficiency level adds to the Acceleration Wand",
+                            "Ticks applied = accelerationTickMultiplier + (Efficiency level * this value)",
+                            "Default: 64 (0 = Efficiency has no effect)")
+                    .defineInRange("accelerationWandEfficiencyTicks", 64, 0, 1000);
             accelerationWandDurability = builder
                     .comment("The durability of the Acceleration Wand")
                     .comment("Default: 48 (0 = unlimited)")
@@ -173,6 +221,11 @@ public class Config {
             pedestalAccelerationMultiplier = builder
                     .comment("The number of extra ticks a pedestal-held Acceleration Wand applies")
                     .defineInRange("pedestalAccelerationMultiplier", 16, 1, 1000);
+            pedestalAccelerationEfficiencyTicks = builder
+                    .comment("The extra ticks each Efficiency level adds to a pedestal-held Acceleration Wand",
+                            "Ticks applied = pedestalAccelerationMultiplier + (Efficiency level * this value)",
+                            "Default: 16 (0 = Efficiency has no effect)")
+                    .defineInRange("pedestalAccelerationEfficiencyTicks", 16, 0, 1000);
             builder.pop();
 
             builder.push("Love Wand");
@@ -186,6 +239,16 @@ public class Config {
             pedestalLoveRange = builder
                     .comment("The radius (in blocks) in which a pedestal-held Love Wand pairs animals")
                     .defineInRange("pedestalLoveRange", 7, 1, 32);
+            loveWandEfficiencyRange = builder
+                    .comment("The extra range each Efficiency level adds to the Love Wand",
+                            "Range = loveWandLureRange + (Efficiency level * this value)",
+                            "Default: 1 (0 = Efficiency has no effect)")
+                    .defineInRange("loveWandEfficiencyRange", 1, 0, 16);
+            pedestalLoveEfficiencyRange = builder
+                    .comment("The extra range each Efficiency level adds to a pedestal-held Love Wand",
+                            "Range = pedestalLoveRange + (Efficiency level * this value)",
+                            "Default: 1 (0 = Efficiency has no effect)")
+                    .defineInRange("pedestalLoveEfficiencyRange", 1, 0, 16);
             builder.pop();
 
             builder.push("Ore-Locator Wand");
@@ -218,6 +281,17 @@ public class Config {
             pedestalVeinMaxBlocks = builder
                     .comment("The most blocks a pedestal-held Vein Miner Wand breaks in one operation")
                     .defineInRange("pedestalVeinMaxBlocks", 64, 1, 512);
+            veinMinerEfficiencyBlocks = builder
+                    .comment("The extra blocks each Efficiency level lets the Vein Miner Wand break in one use",
+                            "The wand has no radius - it flood fills until a block cap, so Efficiency widens that cap",
+                            "Blocks = veinMinerMaxBlocks + (Efficiency level * this value)",
+                            "Default: 16 (0 = Efficiency has no effect)")
+                    .defineInRange("veinMinerEfficiencyBlocks", 16, 0, 1000);
+            pedestalVeinEfficiencyBlocks = builder
+                    .comment("The extra blocks each Efficiency level lets a pedestal-held Vein Miner Wand break in one operation",
+                            "Blocks = pedestalVeinMaxBlocks + (Efficiency level * this value)",
+                            "Default: 16 (0 = Efficiency has no effect)")
+                    .defineInRange("pedestalVeinEfficiencyBlocks", 16, 0, 1000);
             builder.pop();
 
             builder.push("Food Wand");
@@ -249,22 +323,32 @@ public class Config {
     // Static fields for easy access
     public static int spongeWandRange;
     public static int spongeWandDurability;
+    public static int spongeWandEfficiencyRange;
+    public static int pedestalSpongeEfficiencyInterval;
     public static int lavaSpongeWandRange;
     public static int lavaSpongeWandDurability;
+    public static int lavaSpongeWandEfficiencyRange;
+    public static int pedestalLavaSpongeEfficiencyRange;
     public static int growthWandRange;
     public static int growthWandDurability;
+    public static int growthWandEfficiencyRange;
+    public static int pedestalGrowthEfficiencyRange;
     public static double magneticWandRange;
     public static double magneticWandSpeed;
     public static int teleportWandDistance;
     public static int teleportWandDurability;
     public static int accelerationTickMultiplier;
+    public static int accelerationWandEfficiencyTicks;
     public static int accelerationWandDurability;
     public static double loveWandLureRange;
     public static int loveWandDurability;
+    public static int loveWandEfficiencyRange;
+    public static int pedestalLoveEfficiencyRange;
     public static int highlightRadius;
     public static long highlightDurationMs;
     public static int oreLocatorWandDurability;
     public static int veinMinerMaxBlocks;
+    public static int veinMinerEfficiencyBlocks;
     public static int veinMinerWandDurability;
     public static int lightWandDurability;
     public static int pedestalGrowthRange;
@@ -278,11 +362,13 @@ public class Config {
     public static int pedestalLightMaxBlocks;
     public static int pedestalVeinRange;
     public static int pedestalVeinMaxBlocks;
+    public static int pedestalVeinEfficiencyBlocks;
     public static int pedestalTeleportRangeMultiplier;
     public static int pedestalTeleportCooldownTicks;
     public static int pedestalOreRadius;
     public static boolean pedestalResurrectionCrossDimensionEnabled;
     public static int pedestalAccelerationMultiplier;
+    public static int pedestalAccelerationEfficiencyTicks;
     public static int pedestalOperationInterval;
     public static int pedestalFluidBuckets;
     public static double pedestalMagnetSpeed;
@@ -292,8 +378,12 @@ public class Config {
     public static void bake() {
         spongeWandRange = SERVER.spongeWandRange.get();
         spongeWandDurability = SERVER.spongeWandDurability.get();
+        spongeWandEfficiencyRange = SERVER.spongeWandEfficiencyRange.get();
+        pedestalSpongeEfficiencyInterval = SERVER.pedestalSpongeEfficiencyInterval.get();
         lavaSpongeWandRange = SERVER.lavaSpongeWandRange.get();
         lavaSpongeWandDurability = SERVER.lavaSpongeWandDurability.get();
+        lavaSpongeWandEfficiencyRange = SERVER.lavaSpongeWandEfficiencyRange.get();
+        pedestalLavaSpongeEfficiencyRange = SERVER.pedestalLavaSpongeEfficiencyRange.get();
         growthWandRange = SERVER.growthWandRange.get();
         growthWandDurability = SERVER.growthWandDurability.get();
         magneticWandRange = SERVER.magneticWandRange.get();
@@ -301,6 +391,7 @@ public class Config {
         teleportWandDistance = SERVER.teleportWandDistance.get();
         teleportWandDurability = SERVER.teleportWandDurability.get();
         accelerationTickMultiplier = SERVER.accelerationTickMultiplier.get();
+        accelerationWandEfficiencyTicks = SERVER.accelerationWandEfficiencyTicks.get();
         accelerationWandDurability = SERVER.accelerationWandDurability.get();
         loveWandLureRange = SERVER.loveWandLureRange.get();
         loveWandDurability = SERVER.loveWandDurability.get();
@@ -308,11 +399,16 @@ public class Config {
         highlightDurationMs = SERVER.highlightDurationMs.get();
         oreLocatorWandDurability = SERVER.oreLocatorWandDurability.get();
         veinMinerMaxBlocks = SERVER.veinMinerMaxBlocks.get();
+        veinMinerEfficiencyBlocks = SERVER.veinMinerEfficiencyBlocks.get();
         veinMinerWandDurability = SERVER.veinMinerWandDurability.get();
         lightWandDurability = SERVER.lightWandDurability.get();
         pedestalGrowthRange = SERVER.pedestalGrowthRange.get();
+        growthWandEfficiencyRange = SERVER.growthWandEfficiencyRange.get();
+        pedestalGrowthEfficiencyRange = SERVER.pedestalGrowthEfficiencyRange.get();
         pedestalMagneticRange = SERVER.pedestalMagneticRange.get();
         pedestalLoveRange = SERVER.pedestalLoveRange.get();
+        loveWandEfficiencyRange = SERVER.loveWandEfficiencyRange.get();
+        pedestalLoveEfficiencyRange = SERVER.pedestalLoveEfficiencyRange.get();
         pedestalFoodRange = SERVER.pedestalFoodRange.get();
         pedestalFoodAmount = SERVER.pedestalFoodAmount.get();
         pedestalFoodUnitsPerDamage = SERVER.pedestalFoodUnitsPerDamage.get();
@@ -321,11 +417,13 @@ public class Config {
         pedestalLightMaxBlocks = SERVER.pedestalLightMaxBlocks.get();
         pedestalVeinRange = SERVER.pedestalVeinRange.get();
         pedestalVeinMaxBlocks = SERVER.pedestalVeinMaxBlocks.get();
+        pedestalVeinEfficiencyBlocks = SERVER.pedestalVeinEfficiencyBlocks.get();
         pedestalTeleportRangeMultiplier = SERVER.pedestalTeleportRangeMultiplier.get();
         pedestalTeleportCooldownTicks = SERVER.pedestalTeleportCooldownTicks.get();
         pedestalOreRadius = SERVER.pedestalOreRadius.get();
         pedestalResurrectionCrossDimensionEnabled = SERVER.pedestalResurrectionCrossDimensionEnabled.get();
         pedestalAccelerationMultiplier = SERVER.pedestalAccelerationMultiplier.get();
+        pedestalAccelerationEfficiencyTicks = SERVER.pedestalAccelerationEfficiencyTicks.get();
         pedestalOperationInterval = SERVER.pedestalOperationInterval.get();
         pedestalFluidBuckets = SERVER.pedestalFluidBuckets.get();
         pedestalMagnetSpeed = SERVER.pedestalMagnetSpeed.get();

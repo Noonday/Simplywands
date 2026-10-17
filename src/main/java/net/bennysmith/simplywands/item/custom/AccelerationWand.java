@@ -11,7 +11,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
@@ -30,7 +29,7 @@ import java.util.Map;
 
 import net.bennysmith.simplywands.Config;
 
-public class AccelerationWand extends Item {
+public class AccelerationWand extends WandItem {
     private static final int DURATION = 20; // 1 second (20 ticks)
 
     private final Map<BlockPos, Integer> acceleratedBlocks = new HashMap<>();
@@ -43,6 +42,12 @@ public class AccelerationWand extends Item {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         tooltipComponents.add(Component.translatable("tooltip.simplywands.acceleration_wand1.tooltip"));
+        //  The tooltip context has no level on some paths (creative search), so fall back to
+        //  the base value rather than reaching for the registry.
+        int efficiency = context.level() == null ? 0 : efficiency(stack, context.level());
+        tooltipComponents.add(Component.translatable("tooltip.simplywands.acceleration_wand.ticks",
+                Config.accelerationTickMultiplier + efficiency * Config.accelerationWandEfficiencyTicks,
+                efficiency));
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
     }
 
@@ -80,8 +85,10 @@ public class AccelerationWand extends Item {
         if (!level.isClientSide() && player != null && level instanceof ServerLevel serverLevel) {
             if (shouldAccelerateBlock(blockState, serverLevel, pos)) {
                 // Accelerate the block, damage the wand, add cooldown, and spawn effects
-                accelerateBlock(serverLevel, pos);
                 ItemStack itemStack = player.getItemInHand(hand);
+                int ticks = scaledByEfficiency(itemStack, level,
+                        Config.accelerationTickMultiplier, Config.accelerationWandEfficiencyTicks);
+                accelerateBlock(serverLevel, pos, ticks);
                 if(Config.accelerationWandDurability != 0) {
                 itemStack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand)); }
                 player.getCooldowns().addCooldown(this, 30);
@@ -109,13 +116,13 @@ public class AccelerationWand extends Item {
     }
 
     // Method to start the acceleration process for a block
-    private void accelerateBlock(ServerLevel level, BlockPos blockPos) {
+    private void accelerateBlock(ServerLevel level, BlockPos blockPos, int ticks) {
         acceleratedBlocks.put(blockPos, DURATION);
-        level.getServer().execute(() -> applyExtraTicks(level, blockPos));
+        level.getServer().execute(() -> applyExtraTicks(level, blockPos, ticks));
     }
 
     // Method to apply extra ticks to an accelerated block
-    private void applyExtraTicks(ServerLevel level, BlockPos blockPos) {
+    private void applyExtraTicks(ServerLevel level, BlockPos blockPos, int ticks) {
         int remainingTime = acceleratedBlocks.getOrDefault(blockPos, 0);
         if (remainingTime > 0) {
             BlockState blockState = level.getBlockState(blockPos);
@@ -125,7 +132,7 @@ public class AccelerationWand extends Item {
                     BlockEntityTicker<BlockEntity> ticker = (BlockEntityTicker<BlockEntity>) blockState.getTicker(level, blockEntity.getType());
                     if (ticker != null) {
                         // Apply extra ticks to the block entity
-                        for (int i = 0; i < Config.accelerationTickMultiplier; i++) {
+                        for (int i = 0; i < ticks; i++) {
                             ticker.tick(level, blockPos, blockState, blockEntity);
                         }
                     } else {
@@ -136,7 +143,7 @@ public class AccelerationWand extends Item {
 
                 // Apply random tick for blocks that use it (like crops)
                 if (blockState.isRandomlyTicking()) {
-                    for (int i = 0; i < Config.accelerationTickMultiplier; i++) {
+                    for (int i = 0; i < ticks; i++) {
                         blockState.randomTick(level, blockPos, level.random);
                     }
                 }
@@ -145,7 +152,7 @@ public class AccelerationWand extends Item {
                 level.neighborChanged(blockPos, blockState.getBlock(), blockPos);
 
                 acceleratedBlocks.put(blockPos, remainingTime - 1);
-                level.getServer().execute(() -> applyExtraTicks(level, blockPos));
+                level.getServer().execute(() -> applyExtraTicks(level, blockPos, ticks));
             } else {
                 acceleratedBlocks.remove(blockPos);
             }
@@ -160,16 +167,6 @@ public class AccelerationWand extends Item {
                 pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
                 20, 0.5, 0.5, 0.5, 0.01);
         level.playSound(null, pos, SoundEvents.BREEZE_SHOOT, SoundSource.BLOCKS, 1.0F, 1.0F);
-    }
-
-    // Disallow enchanting
-    @Override
-    public boolean isEnchantable(ItemStack stack) {
-        return false;
-    }
-    @Override
-    public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
-        return false;
     }
 
     @Override

@@ -9,7 +9,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
@@ -24,7 +23,7 @@ import java.util.Random;
 
 import net.bennysmith.simplywands.Config;
 
-public class GrowthWand extends Item {
+public class GrowthWand extends WandItem {
     public GrowthWand(Properties properties) {
         super(properties);
     }
@@ -49,8 +48,8 @@ public class GrowthWand extends Item {
             boolean didApplyGrowth = false;
             Random random = new Random();
 
-            // Use the configured range
-            int range = Config.growthWandRange;
+            // Use the configured range, widened by any Efficiency on the wand
+            int range = scaledByEfficiency(itemStack, level, Config.growthWandRange, Config.growthWandEfficiencyRange);
             for (int x = -range; x <= range; x++) {
                 for (int z = -range; z <= range; z++) {
                     BlockPos currentPos = blockPos.offset(x, 0, z);
@@ -100,16 +99,6 @@ public class GrowthWand extends Item {
         }
 
         return InteractionResult.PASS;  // Pass the action if on the client side
-    }
-
-    // Disallow enchanting
-    @Override
-    public boolean isEnchantable(ItemStack stack) {
-        return false;
-    }
-    @Override
-    public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
-        return false;
     }
 
     // Durability

@@ -167,11 +167,23 @@ public class PedestalBlockEntity extends BlockEntity {
     }
     private void completedUse() { damageWand(); }
 
+    //  Ticks between pedestal operations. Most wands just use the shared interval. The pedestal
+    //  Sponge has no radius for Efficiency to widen - it works through a fluid tank instead - so
+    //  Efficiency makes it act sooner rather than reach further. Never returns less than 1.
+    private int operationInterval(ServerLevel server) {
+        int interval = Math.max(1, Config.pedestalOperationInterval);
+        if (hasWand(ModItems.SPONGE_WAND.get())) {
+            int bonus = net.bennysmith.simplywands.item.custom.WandItem.efficiency(wand, server) * Config.pedestalSpongeEfficiencyInterval;
+            interval = Math.max(1, interval - bonus);
+        }
+        return interval;
+    }
+
     public void tickServer() {
         updatePower();
         updateResurrectionChunk();
         if (!(level instanceof ServerLevel server) || !active()) return;
-        if (++operationTicks % Math.max(1, Config.pedestalOperationInterval) != 0) return;
+        if (++operationTicks % operationInterval(server) != 0) return;
         Item item = wand.getItem();
         if (item == ModItems.SPONGE_WAND.get()) { collectFluid(server, Fluids.WATER, false); transferFluid(server); }
         else if (item == ModItems.LAVASPONGE_WAND.get()) { collectFluid(server, Fluids.LAVA, true); transferFluid(server); }
@@ -209,7 +221,7 @@ public class PedestalBlockEntity extends BlockEntity {
     //  separate pool across the room is not this wand's to empty. Bounded by the same cube the
     //  handheld wand searches.
     private List<BlockPos> connectedFluidSources(ServerLevel server, Fluid fluid) {
-        int range = Config.lavaSpongeWandRange;
+        int range = net.bennysmith.simplywands.item.custom.WandItem.scaledByEfficiency(wand, server, Config.lavaSpongeWandRange, Config.pedestalLavaSpongeEfficiencyRange);
         Set<BlockPos> reached = new LinkedHashSet<>();
         ArrayDeque<BlockPos> queue = new ArrayDeque<>();
         for (BlockPos pos : adjacentFluidSources(server, fluid)) {
@@ -264,9 +276,9 @@ public class PedestalBlockEntity extends BlockEntity {
     private void transferItems(ServerLevel server) {
         for(Direction side:Direction.values()){ net.neoforged.neoforge.items.IItemHandler target=server.getCapability(Capabilities.ItemHandler.BLOCK,worldPosition.relative(side),side.getOpposite()); if(target==null)continue; for(int i=0;i<storedItems.getSlots();i++){ItemStack rem=storedItems.getStackInSlot(i).copy();for(int j=0;j<target.getSlots()&&!rem.isEmpty();j++)rem=target.insertItem(j,rem,false);storedItems.setStackInSlot(i,rem);}}
     }
-    private boolean growCrops(ServerLevel server){boolean changed=false;int r=Config.pedestalGrowthRange;for(int x=-r;x<=r;x++)for(int z=-r;z<=r;z++){BlockPos p=worldPosition.offset(x,0,z);BlockState s=server.getBlockState(p);if(s.getBlock() instanceof CropBlock crop&&crop.isValidBonemealTarget(server,p,s)){crop.performBonemeal(server,server.random,p,s);changed=true;}}return changed;}
-    @SuppressWarnings("unchecked") private boolean accelerateBelow(ServerLevel server){BlockPos p=worldPosition.below();BlockState s=server.getBlockState(p);boolean worked=false;if(s.isRandomlyTicking()){for(int i=0;i<Config.pedestalAccelerationMultiplier;i++)s.randomTick(server,p,server.random);worked=true;}BlockEntity e=server.getBlockEntity(p);if(e!=null){BlockEntityTicker<BlockEntity> t=(BlockEntityTicker<BlockEntity>)s.getTicker(server,e.getType());if(t!=null){for(int i=0;i<Config.pedestalAccelerationMultiplier;i++)t.tick(server,p,s,e);worked=true;}}return worked;}
-    private boolean breedAnimals(ServerLevel server){List<Animal>a=server.getEntitiesOfClass(Animal.class,new AABB(worldPosition).inflate(Config.pedestalLoveRange),e->e.getAge()==0&&e.canFallInLove());for(int i=0;i+1<a.size();i+=2){a.get(i).setInLove(null);a.get(i+1).setInLove(null);}return a.size()>1;}
+    private boolean growCrops(ServerLevel server){boolean changed=false;int r=net.bennysmith.simplywands.item.custom.WandItem.scaledByEfficiency(wand,server,Config.pedestalGrowthRange,Config.pedestalGrowthEfficiencyRange);for(int x=-r;x<=r;x++)for(int z=-r;z<=r;z++){BlockPos p=worldPosition.offset(x,0,z);BlockState s=server.getBlockState(p);if(s.getBlock() instanceof CropBlock crop&&crop.isValidBonemealTarget(server,p,s)){crop.performBonemeal(server,server.random,p,s);changed=true;}}return changed;}
+    @SuppressWarnings("unchecked") private boolean accelerateBelow(ServerLevel server){int ticks=net.bennysmith.simplywands.item.custom.WandItem.scaledByEfficiency(wand,server,Config.pedestalAccelerationMultiplier,Config.pedestalAccelerationEfficiencyTicks);BlockPos p=worldPosition.below();BlockState s=server.getBlockState(p);boolean worked=false;if(s.isRandomlyTicking()){for(int i=0;i<ticks;i++)s.randomTick(server,p,server.random);worked=true;}BlockEntity e=server.getBlockEntity(p);if(e!=null){BlockEntityTicker<BlockEntity> t=(BlockEntityTicker<BlockEntity>)s.getTicker(server,e.getType());if(t!=null){for(int i=0;i<ticks;i++)t.tick(server,p,s,e);worked=true;}}return worked;}
+    private boolean breedAnimals(ServerLevel server){List<Animal>a=server.getEntitiesOfClass(Animal.class,new AABB(worldPosition).inflate(net.bennysmith.simplywands.item.custom.WandItem.scaledByEfficiency(wand,server,Config.pedestalLoveRange,Config.pedestalLoveEfficiencyRange)),e->e.getAge()==0&&e.canFallInLove());for(int i=0;i+1<a.size();i+=2){a.get(i).setInLove(null);a.get(i+1).setInLove(null);}return a.size()>1;}
     private void feedPlayers(ServerLevel server){int perDamage=Config.pedestalFoodUnitsPerDamage;for(Player p:server.getEntitiesOfClass(Player.class,new AABB(worldPosition).inflate(Config.pedestalFoodRange))){int before=p.getFoodData().getFoodLevel();p.getFoodData().eat(Config.pedestalFoodAmount,(float)Config.pedestalSaturation);foodProgress+=p.getFoodData().getFoodLevel()-before;if(foodProgress>=perDamage){foodProgress-=perDamage;damageWand();}}}
     private void maintainLights(ServerLevel server){
         int level=Config.pedestalLightLevel;
@@ -293,7 +305,15 @@ public class PedestalBlockEntity extends BlockEntity {
         return true;
     }
     private void clearLights(){if(level instanceof ServerLevel s)for(BlockPos p:placedLights)if(s.hasChunkAt(p)&&s.getBlockState(p).is(Blocks.LIGHT))s.setBlock(p,Blocks.AIR.defaultBlockState(),Block.UPDATE_ALL);placedLights.clear();}
-    private boolean mineOres(ServerLevel server){int r=Config.pedestalVeinRange,n=0;for(int x=-r;x<=r&&n<Config.pedestalVeinMaxBlocks;x++)for(int y=-r;y<=r&&n<Config.pedestalVeinMaxBlocks;y++)for(int z=-r;z<=r&&n<Config.pedestalVeinMaxBlocks;z++){if(x*x+y*y+z*z>r*r)continue;BlockPos p=worldPosition.offset(x,y,z);if(server.hasChunkAt(p)&&server.getBlockState(p).is(net.neoforged.neoforge.common.Tags.Blocks.ORES)){for(ItemStack d:Block.getDrops(server.getBlockState(p),server,p,server.getBlockEntity(p)))Block.popResource(server,p,d);server.destroyBlock(p,false);n++;}}return n>0;}
+    //  The wand has to be handed to the loot context as the tool, otherwise Fortune and Silk
+    //  Touch never reach the drop table and the pedestal mines worse than the handheld wand.
+    //  The owner is passed as the entity when they are online so loot tables that look at
+    //  this_entity still behave.
+    private net.minecraft.world.entity.Entity ownerPlayer(ServerLevel server){
+        if(owner==null)return null;
+        return server.getServer().getPlayerList().getPlayer(owner);
+    }
+    private boolean mineOres(ServerLevel server){int r=Config.pedestalVeinRange,n=0;int max=net.bennysmith.simplywands.item.custom.WandItem.scaledByEfficiency(wand,server,Config.pedestalVeinMaxBlocks,Config.pedestalVeinEfficiencyBlocks);for(int x=-r;x<=r&&n<max;x++)for(int y=-r;y<=r&&n<max;y++)for(int z=-r;z<=r&&n<max;z++){if(x*x+y*y+z*z>r*r)continue;BlockPos p=worldPosition.offset(x,y,z);if(server.hasChunkAt(p)&&server.getBlockState(p).is(net.neoforged.neoforge.common.Tags.Blocks.ORES)){for(ItemStack d:Block.getDrops(server.getBlockState(p),server,p,server.getBlockEntity(p),ownerPlayer(server),wand))Block.popResource(server,p,d);server.destroyBlock(p,false);n++;}}return n>0;}
 
     public void registerResurrection(){if(owner!=null&&hasWand(ModItems.RESURRECTION_WAND.get())&&active()){RESURRECTION_STATIONS.put(owner,this);updateResurrectionChunk();}}
     public void unregisterResurrection(){if(owner!=null)RESURRECTION_STATIONS.remove(owner,this);releaseResurrectionChunk();}

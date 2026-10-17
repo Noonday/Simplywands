@@ -6,7 +6,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.InteractionHand;
@@ -19,7 +18,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 
 import java.util.List;
 
-public class FoodWand extends Item {
+public class FoodWand extends WandItem {
     private boolean isActive = false;
 
     public FoodWand(Properties properties) {
@@ -88,15 +87,5 @@ public class FoodWand extends Item {
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         tooltipComponents.add(Component.translatable("tooltip.simplywands.food_wand.tooltip"));
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
-    }
-
-    // Disallow enchanting
-    @Override
-    public boolean isEnchantable(ItemStack stack) {
-        return false;
-    }
-    @Override
-    public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
-        return false;
     }
 }

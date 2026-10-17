@@ -9,7 +9,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
@@ -19,7 +18,7 @@ import net.minecraft.world.level.material.Fluids;
 
 import java.util.List;
 
-public class SpongeWand extends Item {
+public class SpongeWand extends WandItem {
     public SpongeWand(Properties properties) {
         super(properties);
     }
@@ -44,7 +43,7 @@ public class SpongeWand extends Item {
 
             boolean didRemoveWater = false;  // Track if any water was removed
 
-            int range = Config.spongeWandRange;
+            int range = scaledByEfficiency(itemStack, level, Config.spongeWandRange, Config.spongeWandEfficiencyRange);
             for (int x = -range; x <= range; x++) {
                 for (int y = -2; y <= 2; y++) {
                     for (int z = -range; z <= range; z++) {
@@ -74,16 +73,6 @@ public class SpongeWand extends Item {
         }
 
         return InteractionResultHolder.pass(player.getItemInHand(hand));  // Pass the action if on the client side
-    }
-
-    // Disallow enchanting
-    @Override
-    public boolean isEnchantable(ItemStack stack) {
-        return false;
-    }
-    @Override
-    public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
-        return false;
     }
 
     @Override

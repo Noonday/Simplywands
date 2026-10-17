@@ -8,7 +8,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
@@ -20,7 +19,7 @@ import java.util.List;
 
 import net.bennysmith.simplywands.Config;
 
-public class LavaSpongeWand extends Item {
+public class LavaSpongeWand extends WandItem {
     public LavaSpongeWand(Properties properties) {
         super(properties);
     }
@@ -45,7 +44,7 @@ public class LavaSpongeWand extends Item {
 
             boolean didRemoveLava = false;  // Track if any lava was removed
 
-            int range = Config.lavaSpongeWandRange;
+            int range = scaledByEfficiency(itemStack, level, Config.lavaSpongeWandRange, Config.lavaSpongeWandEfficiencyRange);
             for (int x = -range; x <= range; x++) {
                 for (int y = -range; y <= range; y++) {
                     for (int z = -range; z <= range; z++) {
@@ -75,16 +74,6 @@ public class LavaSpongeWand extends Item {
         }
 
         return InteractionResultHolder.pass(player.getItemInHand(hand));  // Pass the action if on the client side
-    }
-
-    // Disallow enchanting
-    @Override
-    public boolean isEnchantable(ItemStack stack) {
-        return false;
-    }
-    @Override
-    public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
-        return false;
     }
 
     // Durability

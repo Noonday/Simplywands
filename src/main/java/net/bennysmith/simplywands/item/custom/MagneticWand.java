@@ -7,7 +7,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.InteractionHand;
@@ -20,7 +19,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 
 import java.util.List;
 
-public class MagneticWand extends Item {
+public class MagneticWand extends WandItem {
     // Indicates whether the wand is active
     private boolean isActive = false;
 
@@ -113,15 +112,5 @@ public class MagneticWand extends Item {
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         tooltipComponents.add(Component.translatable("tooltip.simplywands.magnetic_wand.tooltip"));
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
-    }
-
-    // Disallow enchanting
-    @Override
-    public boolean isEnchantable(ItemStack stack) {
-        return false;
-    }
-    @Override
-    public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
-        return false;
     }
 }

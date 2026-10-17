@@ -2,6 +2,7 @@ package net.bennysmith.simplywands.item.custom;
 
 import net.bennysmith.simplywands.Config;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -9,7 +10,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
@@ -22,9 +23,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class VeinMinerWand extends Item {
+public class VeinMinerWand extends WandItem {
     public VeinMinerWand(Properties properties) {
         super(properties);
+    }
+
+    //  Fortune and Silk Touch only reach the loot table through this wand's own Block.getDrops
+    //  call, which is the one wand that passes itself in as the tool. On any other wand they
+    //  would sit there doing nothing, so they are kept to this one.
+    @Override
+    protected boolean isAllowedOnWands(ItemStack stack, Holder<Enchantment> enchantment) {
+        return super.isAllowedOnWands(stack, enchantment)
+                || enchantment.is(net.bennysmith.simplywands.util.ModTags.Enchantments.VEIN_MINER_ONLY_ENCHANTMENTS);
     }
 
     // Tooltip
@@ -44,7 +54,11 @@ public class VeinMinerWand extends Item {
 
         if (targetBlock.defaultBlockState().is(Tags.Blocks.ORES)) {
             if (!world.isClientSide()) {
-                Set<BlockPos> vein = findVein(world, initialPos, targetBlock, new HashSet<>());
+                ItemStack itemStack = player.getItemInHand(hand);
+                // The wand has no radius - it flood fills until a block cap, so that cap is
+                // what Efficiency widens.
+                int maxBlocks = scaledByEfficiency(itemStack, world, Config.veinMinerMaxBlocks, Config.veinMinerEfficiencyBlocks);
+                Set<BlockPos> vein = findVein(world, initialPos, targetBlock, new HashSet<>(), maxBlocks);
                 List<ItemStack> allDrops = new ArrayList<>();
 
                 for (BlockPos blockPos : vein) {
@@ -60,7 +74,6 @@ public class VeinMinerWand extends Item {
                     Block.popResource(world, initialPos, drop);
                 }
 
-                ItemStack itemStack = player.getItemInHand(hand);
                 if(Config.veinMinerWandDurability != 0) {
                 itemStack.hurtAndBreak(vein.size(), player, LivingEntity.getSlotForHand(hand)); }
             }
@@ -70,8 +83,8 @@ public class VeinMinerWand extends Item {
         return InteractionResult.PASS;
     }
 
-    private Set<BlockPos> findVein(Level world, BlockPos pos, Block targetBlock, Set<BlockPos> vein) {
-        if (vein.size() >= Config.veinMinerMaxBlocks || !world.getBlockState(pos).is(targetBlock)) {
+    private Set<BlockPos> findVein(Level world, BlockPos pos, Block targetBlock, Set<BlockPos> vein, int maxBlocks) {
+        if (vein.size() >= maxBlocks || !world.getBlockState(pos).is(targetBlock)) {
             return vein;
         }
 
@@ -83,23 +96,13 @@ public class VeinMinerWand extends Item {
                     if (x == 0 && y == 0 && z == 0) continue; // Skip the center block
                     BlockPos newPos = pos.offset(x, y, z);
                     if (!vein.contains(newPos)) {
-                        findVein(world, newPos, targetBlock, vein);
+                        findVein(world, newPos, targetBlock, vein, maxBlocks);
                     }
                 }
             }
         }
 
         return vein;
-    }
-
-    // Disallow enchanting
-    @Override
-    public boolean isEnchantable(ItemStack stack) {
-        return false;
-    }
-    @Override
-    public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
-        return false;
     }
 
     // Durability

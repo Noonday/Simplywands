@@ -9,7 +9,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
@@ -17,7 +16,7 @@ import net.minecraft.world.phys.AABB;
 
 import java.util.List;
 
-public class LoveWand extends Item {
+public class LoveWand extends WandItem {
     public LoveWand(Properties properties) {
         super(properties);
     }
@@ -53,7 +52,8 @@ public class LoveWand extends Item {
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
         if (isSelected && entity instanceof Player player && !level.isClientSide) {
-            double lureRange = Config.loveWandLureRange;
+            // The configured lure range is a double but always whole, and Efficiency adds whole blocks.
+            double lureRange = scaledByEfficiency(stack, level, (int) Config.loveWandLureRange, Config.loveWandEfficiencyRange);
             AABB searchArea = player.getBoundingBox().inflate(lureRange);
             List<Animal> nearbyAnimals = level.getEntitiesOfClass(Animal.class, searchArea,
                     animal -> animal.getAge() == 0 && animal.canFallInLove());
@@ -66,16 +66,6 @@ public class LoveWand extends Item {
                 }
             }
         }
-    }
-
-    // Disallow enchanting
-    @Override
-    public boolean isEnchantable(ItemStack stack) {
-        return false;
-    }
-    @Override
-    public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
-        return false;
     }
 
     // Durability

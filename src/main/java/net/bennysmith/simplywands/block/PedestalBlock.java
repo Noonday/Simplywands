@@ -110,8 +110,8 @@ public class PedestalBlock extends BaseEntityBlock {
         return ItemInteractionResult.sidedSuccess(level.isClientSide());
     }
 
-    //  The wands have no shared base class or tag, so match on the mod namespace.
-    //  BlockItem is excluded so a pedestal can't be placed inside a pedestal.
+    //  Match on the mod namespace so every wand qualifies. BlockItem is excluded so a
+    //  pedestal can't be placed inside a pedestal.
     private static boolean isWand(ItemStack stack) {
         ResourceLocation id = BuiltInRegistries.ITEM.getKey(stack.getItem());
         return id != null

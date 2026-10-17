@@ -7,7 +7,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
@@ -20,7 +19,7 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 
-public class LightWand extends Item {
+public class LightWand extends WandItem {
     private static final int DEFAULT_LIGHT_LEVEL = 15;
     private int currentLightLevel = DEFAULT_LIGHT_LEVEL;
 
@@ -85,16 +84,6 @@ public class LightWand extends Item {
 
         // Pass the action if on the client side
         return InteractionResultHolder.pass(player.getItemInHand(hand));
-    }
-
-    // Disallow enchanting
-    @Override
-    public boolean isEnchantable(ItemStack stack) {
-        return false;
-    }
-    @Override
-    public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
-        return false;
     }
 
     // Add this new method to get the current light level
